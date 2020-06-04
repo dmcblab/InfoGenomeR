@@ -21,11 +21,13 @@ Demo contains input files for InfoGenomeR.
 # How to generate inputs from BAM
 Please follow the guideline.
 # Check baselines for SVs
-`Rscript SV_performance.R delly.format true_SV_sets_somatic 0 0 fmeasure 1000`\
-0.7405248\
-`Rscript SV_performance.R manta.format true_SV_sets_somatic 0 0 fmeasure 1000`\
-0.8129496\
-`Rscript SV_performance.R novobreak.format true_SV_sets_somatic 0 0 fmeasure 1000`\
+`Rscript SV_performance.R delly.format true_SV_sets_somatic 0 0 fmeasure\
+precision:0.6902174 recall:0.7987421 fmeasure:0.7405248\
+`Rscript SV_performance.R manta.format true_SV_sets_somatic 0 0 fmeasure`\
+precision:0.9495798 recall:0.7106918 fmeasure:0.8129496\
+`Rscript SV_performance.R novobreak.format true_SV_sets_somatic 0 0 fmeasure`\
+precision:0.9021739 recall:0.4968553 fmeasure:0.6408014\
+
 0.6408014
 # Running InfoGenomeR
 Merge SV calls.\
@@ -35,5 +37,4 @@ Run a script for breakpoint graph construction.\
 It takes an hour during five iterations and outputs SVs, copy numbers and a breakpoint graph.
 # Check performance for SV calls.
 `Rscript SV_performance.R SVs 0 0 fmeasure 1000`\
-0.8737201
-
+precision:0.9552239 recall:0.8050314 fmeasure:0.8737201
