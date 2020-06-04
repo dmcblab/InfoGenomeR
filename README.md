@@ -32,7 +32,7 @@ Merge SV calls.\
 Run a script for breakpoint graph construction.\
 `./breakpoint_graph.sh somatic sample1 sample1 1.5 5 bicseq_norm bicseq_norm_germ copy_numbers.control hg19 5 null null 0`\
 It takes an hour during five iterations and outputs SVs, copy numbers and a breakpoint graph.
-# Check baselines for SVs from InfoGenomeR
+# Check performance for SV calls.
 `Rscript SV_performance.R SVs 0 0 fmeasure 1000`\
 0.8737201
 
