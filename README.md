@@ -18,6 +18,7 @@ Demo contains input files for InfoGenomeR.
 - Non-properly paired reads (NPE.fq1, NPE.fq2)
 - Segmentation file for a control genome (copy_numbers.control)
 # How to generate inputs from BAM
+Please follow the guideline.
 # Check baselines for SVs
 `Rscript SV_performance.R delly.format true_SV_sets_somatic 0 0 fmeasure 1000`\
 0.7405248\
