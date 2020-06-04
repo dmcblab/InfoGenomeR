@@ -1,10 +1,9 @@
 # InfoGenomeR
-Requirements
-_____________________________________
+#Requirements
 . bwa
 . samtools
 . blat
 . R
-  - lpSolveApi
-  - ABSOLUTE
+lpSolveApi
+ABSOLUTE
 . BICseq2
