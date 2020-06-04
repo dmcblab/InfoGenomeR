@@ -10,9 +10,9 @@ InfoGenomeR is the Integrative Framework for Genome Reconstruction that uses a b
 - ABSOLUTE
 - BICseq2
 # Tutorials
-- Download demo files.
-A simiulated cancer genome (haplotype coverage 5X, purity 75%) has 162 somatic SVs (true_SV_sets_somatic).\
-Demo contains input files for InfoGenomeR. 
+- Download demo files. Demo contains input files for InfoGenomeR. 
+- Tutorial 1: a simiulated cancer genome (haplotype coverage 5X, purity 75%) has 162 somatic SVs (true_SV_sets_somatic).\
+- Tutorial 2: H292 cancer cell line.
 
 # Inputs
 - BICseq norm files (bicseq_norm, bicseq_norm_germ)
