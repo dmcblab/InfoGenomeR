@@ -28,7 +28,7 @@ Demo contains input files for InfoGenomeR.
 # Running InfoGenomeR
 Merge SV calls.\
 `cat delly.format manta.format novobreak.format > SVs`\
-Run a script for breakpoint graph construction\
+Run a script for breakpoint graph construction.\
 `./breakpoint_graph.sh somatic sample1 sample1 1.5 5 bicseq_norm bicseq_norm_germ copy_numbers.control hg19 5 null null 0`\
 It takes an hour during five iterations and outputs SVs, copy numbers and a breakpoint graph.
 # Check baselines for SVs from InfoGenomeR
