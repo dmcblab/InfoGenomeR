@@ -8,8 +8,8 @@
 - ABSOLUTE
 - BICseq2
 # Tutorials
-- Download demo files
-A simiulated cancer genome (haplotype coverage 5X, purity 75%) has 162 somatic SVs (true_SV_sets_somatic)\
+- Download demo files.
+A simiulated cancer genome (haplotype coverage 5X, purity 75%) has 162 somatic SVs (true_SV_sets_somatic).\
 Demo contains input files for InfoGenomeR. 
 
 # Inputs
