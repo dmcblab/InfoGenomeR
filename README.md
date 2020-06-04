@@ -9,7 +9,7 @@
 - BICseq2
 # Tutorials
 - Download demo files
-A simiulated cancer genome has 162 somatic SVs (true_SV_sets_somatic)
+A simiulated cancer genome has 162 somatic SVs (true_SV_sets_somatic)\
 Demo contains input files for InfoGenomeR. 
 
 # Inputs
@@ -19,10 +19,10 @@ Demo contains input files for InfoGenomeR.
 - Segmentation file for a control genome (copy_numbers.control)
 # How to generate inputs from BAM
 # Check baselines for SVs
-`Rscript SV_performance.R delly.format true_SV_sets_somatic 0 0 fmeasure 1000`
-`Rscript SV_performance.R manta.format true_SV_sets_somatic 0 0 fmeasure 1000`
-`Rscript SV_performance.R novobreak.format true_SV_sets_somatic 0 0 fmeasure 1000`
+`Rscript SV_performance.R delly.format true_SV_sets_somatic 0 0 fmeasure 1000`\
+`Rscript SV_performance.R manta.format true_SV_sets_somatic 0 0 fmeasure 1000`\
+`Rscript SV_performance.R novobreak.format true_SV_sets_somatic 0 0 fmeasure 1000`\
 
 # Running InfoGenomeR
-Merge SV calls.
+Merge SV calls.\
 `cat delly.format manta.format novobreak.format > SVs`
