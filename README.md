@@ -1,5 +1,6 @@
 # InfoGenomeR
-# Requirements
+Requirements
+_____________________________________
 . bwa
 . samtools
 . blat
