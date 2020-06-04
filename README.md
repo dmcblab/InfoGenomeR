@@ -21,7 +21,7 @@ Demo contains input files for InfoGenomeR.
 # How to generate inputs from BAM
 Please follow the guideline.
 # Check baselines for SVs
-`Rscript SV_performance.R delly.format true_SV_sets_somatic 0 0 fmeasure\
+`Rscript SV_performance.R delly.format true_SV_sets_somatic 0 0 fmeasure`\
 precision:0.6902174 recall:0.7987421 fmeasure:0.7405248\
 `Rscript SV_performance.R manta.format true_SV_sets_somatic 0 0 fmeasure`\
 precision:0.9495798 recall:0.7106918 fmeasure:0.8129496\
