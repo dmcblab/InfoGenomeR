@@ -34,7 +34,7 @@ Please follow the guideline.
 From initial 4054 SV calls (2009 translocations), InfoGenomeR reconstructs der(11)t(8;11) and der(19)t(8;19)x2.
 
 # Tutorial 1
-- Check baselines for SVs
+- Check baselines for SVs\
 `Rscript SV_performance.R delly.format true_SV_sets_somatic 0 0`\
 precision: 0.6902174 recall: 0.7987421 fmeasure: 0.7405248\
 `Rscript SV_performance.R manta.format true_SV_sets_somatic 0 0`\
