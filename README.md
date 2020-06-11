@@ -1,8 +1,3 @@
-<p align="center">
-    <img height="150" src="https://github.com/qlalf1457/InfoGenomeR/blob/master/ACN.pdf">
-  </a>
-  <h1 align="center">InfoGenomeR</h1>
-</p>
 
 # InfoGenomeR
 - InfoGenomeR is the Integrative Framework for Genome Reconstruction that uses a breakpoint graph to model the connectivity among genomic segments at the genome-wide scale. InfoGenomeR integrates cancer purity and ploidy, total CNAs, allele-specific CNAs, and haplotype information to identify the optimal breakpoint graph representing cancer genomes.
@@ -67,3 +62,9 @@ precision: 0.9552239 recall: 0.8050314 fmeasure: 0.8737201
 - Run the plot script for a haplotype graph and the script for Eulerian path finding.\
 `Rscript ACN_GRAPH_phased_ver_haplotype_phased.R 8 11 15 19`\
 `./DAG.sh F`
+<p align="center">
+    <img height="150" src="https://github.com/qlalf1457/InfoGenomeR/blob/master/ACN.pdf">
+  </a>
+  <h1 align="center">InfoGenomeR</h1>
+</p>
+
