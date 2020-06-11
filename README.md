@@ -59,4 +59,5 @@ precision: 0.9552239 recall: 0.8050314 fmeasure: 0.8737201
 `./allele_graph/allele_graph.sh total copy_numbers.control hom_snps.format het_snps.format hg19.fa`\
 `./haplotype_graph/haplotype_graph.sh`
 - Run the plot script for a haplotype graph and the script for Eulerian path finding.\
+`Rscript ACN_GRAPH_phased_ver_haplotype_phased.R 8 11 15 19`
 `./DAG.sh F`
