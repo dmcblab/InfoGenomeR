@@ -50,7 +50,7 @@ Run scripts for breakpoint graph construction.\
 `./allele_graph/allele_graph.sh somatic copy_numbers.control hom_snps.format het_snps.format hg19.fa`\
 `./haplotype_graph/haplotype_graph.sh`\
 It takes a few hours during five iterations and outputs SVs, copy numbers and a breakpoint graph at the haplotype level.\
-- Check performance for SV calls.\
+- Check performance for SV calls from InfoGenomeR.\
 `Rscript SV_performance.R SVs true_SV_sets_somatic 0 0`\
 precision: 0.9552239 recall: 0.8050314 fmeasure: 0.8737201
 
