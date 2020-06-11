@@ -19,7 +19,7 @@
 - SNP calls (het_snps.format, hom_snps.format)
 # How to generate inputs from BAM
 Please follow the guideline.
-# Usages
+# Running InfoGenomeR
 - Breakpoint graph construction.\
 `./breakpoint_graph/breakpoint_graph.sh <mode> <sample_name> <cancer_type> <min_ploidy> <max_ploidy> <bicseq_norm> <bicseq_norm_germ> <copy_numbers.control> <fasta_prefix> <haplotype_coverage> <tumor_bam> <normal_bam> <chr_prefix>`
 - Allele-specific graph construction.\
