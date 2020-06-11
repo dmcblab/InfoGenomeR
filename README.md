@@ -34,7 +34,7 @@ Please follow the guideline.
 From initial 4054 SV calls (2009 translocations), InfoGenomeR reconstructs der(11)t(8;11) and der(19)t(8;19)x2.
 
 # Tutorial 1
-- Check baselines for SVs\
+- Check baselines for SVs.\
 `Rscript SV_performance.R delly.format true_SV_sets_somatic 0 0`\
 precision: 0.6902174 recall: 0.7987421 fmeasure: 0.7405248\
 `Rscript SV_performance.R manta.format true_SV_sets_somatic 0 0`\
@@ -50,7 +50,7 @@ Run scripts for breakpoint graph construction.\
 `./allele_graph/allele_graph.sh somatic copy_numbers.control hom_snps.format het_snps.format hg19.fa`\
 `./haplotype_graph/haplotype_graph.sh`\
 It takes a few hours during five iterations and outputs SVs, copy numbers and a breakpoint graph at the haplotype level.\
-- Check performance for SV calls.
+- Check performance for SV calls.\
 `Rscript SV_performance.R SVs true_SV_sets_somatic 0 0`\
 precision: 0.9552239 recall: 0.8050314 fmeasure: 0.8737201
 
