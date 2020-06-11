@@ -57,4 +57,6 @@ precision: 0.9552239 recall: 0.8050314 fmeasure: 0.8737201
 - Run scripts for breakpoint graph construction.\
 `./breakpoint_graph/breakpoint_graph.sh total A549 LUSC 2 4 bicseq_norm bicseq_norm_germ null hg19 5 null null 0`\
 `./allele_graph/allele_graph.sh total copy_numbers.control hom_snps.format het_snps.format hg19.fa`\
-`./haplotype_graph/haplotype_graph.sh`\
+`./haplotype_graph/haplotype_graph.sh`
+- Run the plot script for a haplotype graph and the script for Eulerian path finding.\
+`./DAG.sh -all F`
