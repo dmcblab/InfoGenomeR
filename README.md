@@ -57,6 +57,7 @@ precision: 0.9552239 recall: 0.8050314 fmeasure: 0.8737201
 # Tutorial 2
 - Run scripts for breakpoint graph construction.\
 `./breakpoint_graph/breakpoint_graph.sh total A549 LUSC 2 4 bicseq_norm bicseq_norm_germ null hg19 5 null null 0`\
+`./breakpoint_graph/breakpoint_graph_simplifying.sh total A549 LUSC 2 4 bicseq_norm bicseq_norm_germ null hg19 5 null null 0`\
 `./allele_graph/allele_graph.sh total copy_numbers.control hom_snps.format het_snps.format hg19.fa`\
 `./haplotype_graph/haplotype_graph.sh`\
 It takes a day during 25 iterations (maximum 24 threads and 256Gb memory).
