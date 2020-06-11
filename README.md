@@ -47,7 +47,7 @@ precision: 0.9021739 recall: 0.4968553 fmeasure: 0.6408014
 - Run scripts for breakpoint graph construction.\
 `./breakpoint_graph.sh somatic sample1 sample1 1.5 5 bicseq_norm bicseq_norm_germ copy_numbers.control hg19 5 null null 0`\
 `./allele_graph/allele_graph.sh somatic copy_numbers.control hom_snps.format het_snps.format hg19.fa`\
-`Haplotype graph construction.`
+`Haplotype graph construction.`\
 It takes a few hours during five iterations and outputs SVs, copy numbers and a breakpoint graph at the haplotype level.\
 # Check performance for SV calls.
 `Rscript SV_performance.R SVs true_SV_sets_somatic 0 0`\
