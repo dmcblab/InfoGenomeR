@@ -1,3 +1,9 @@
+<p align="center">
+    <img height="150" src="https://github.com/qlalf1457/InfoGenomeR/blob/master/ACN.pdf">
+  </a>
+  <h1 align="center">InfoGenomeR</h1>
+</p>
+
 # InfoGenomeR
 - InfoGenomeR is the Integrative Framework for Genome Reconstruction that uses a breakpoint graph to model the connectivity among genomic segments at the genome-wide scale. InfoGenomeR integrates cancer purity and ploidy, total CNAs, allele-specific CNAs, and haplotype information to identify the optimal breakpoint graph representing cancer genomes.
 
