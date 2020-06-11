@@ -28,8 +28,10 @@ Please follow the guideline.
 
 # Tutorials
 - Download demo files. Demo contains input files for InfoGenomeR. 
-- Tutorial 1: a simiulated cancer genome (haplotype coverage 5X, purity 75%) has 162 somatic SVs (true_SV_sets_somatic).\
-- Tutorial 2: H292 cancer cell line.
+- Tutorial 1: a simiulated cancer genome (haplotype coverage 5X, purity 75%) that has 162 somatic SVs (true_SV_sets_somatic).\
+- Tutorial 2: A549 cancer cell line that is triploidy with der(11)t(8;11) and der(19)t(8;19)x2. It has chromothripsis on chromosome 15.
+From initial 4054 SV calls (2009 translocations), InfoGenomeR reconstructs der(11)t(8;11) and der(19)t(8;19)x2.
+
 # Tutorial 1
 # Check baselines for SVs
 `Rscript SV_performance.R delly.format true_SV_sets_somatic 0 0`\
