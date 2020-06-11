@@ -1,5 +1,5 @@
 # InfoGenomeR
-InfoGenomeR is the Integrative Framework for Genome Reconstruction that uses a breakpoint graph to model the connectivity among genomic segments at the genome-wide scale. InfoGenomeR integrates cancer purity and ploidy, total CNAs, allele-specific CNAs, and haplotype information to identify the optimal breakpoint graph representing cancer genomes.
+- InfoGenomeR is the Integrative Framework for Genome Reconstruction that uses a breakpoint graph to model the connectivity among genomic segments at the genome-wide scale. InfoGenomeR integrates cancer purity and ploidy, total CNAs, allele-specific CNAs, and haplotype information to identify the optimal breakpoint graph representing cancer genomes.
 
 # Requirements
 - bwa
@@ -9,10 +9,6 @@ InfoGenomeR is the Integrative Framework for Genome Reconstruction that uses a b
 - lpSolveApi
 - ABSOLUTE
 - BICseq2
-# Tutorials
-- Download demo files. Demo contains input files for InfoGenomeR. 
-- Tutorial 1: a simiulated cancer genome (haplotype coverage 5X, purity 75%) has 162 somatic SVs (true_SV_sets_somatic).\
-- Tutorial 2: H292 cancer cell line.
 
 # Inputs
 - BICseq norm files (bicseq_norm, bicseq_norm_germ)
@@ -22,6 +18,18 @@ InfoGenomeR is the Integrative Framework for Genome Reconstruction that uses a b
 - SNP calls (het_snps.format, hom_snps.format)
 # How to generate inputs from BAM
 Please follow the guideline.
+# Usages
+- Breakpoint graph construction.
+`./breakpoint_graph/breakpoint_graph.sh <mode> <sample_name> <cancer_type> <min_ploidy> <max_ploidy> <bicseq_norm> <bicseq_norm_germ> <copy_numbers.control> <fasta_prefix> <haplotype_coverage> <tumor_bam> <normal_bam> <chr_prefix>`\
+- Allele-specific graph construction.
+` ./allele_graph/allele_graph.sh <mode> <copy_numbers.control> <hom_snps.format> <het_snps.format> <fasta>`\
+- Haplotype graph construction.
+`./haplotype_graph/haplotype_graph.sh`
+# Tutorials
+- Download demo files. Demo contains input files for InfoGenomeR. 
+- Tutorial 1: a simiulated cancer genome (haplotype coverage 5X, purity 75%) has 162 somatic SVs (true_SV_sets_somatic).\
+- Tutorial 2: H292 cancer cell line.
+# Tutorial 1
 # Check baselines for SVs
 `Rscript SV_performance.R delly.format true_SV_sets_somatic 0 0`\
 precision: 0.6902174 recall: 0.7987421 fmeasure: 0.7405248\
