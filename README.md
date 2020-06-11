@@ -62,7 +62,7 @@ precision: 0.9552239 recall: 0.8050314 fmeasure: 0.8737201
 `./haplotype_graph/haplotype_graph.sh`\
 It takes a day during 25 iterations (maximum 24 threads and 256Gb memory).
 - Run the plot script for a haplotype graph and the script for Eulerian path finding.\
-`Rscript ACN_GRAPH_phased_ver_haplotype_phased.R 8 11 15 19`\
+`Rscript ACN_GRAPH_phased_ver_haplotype_phased.R 3 8 11 15 19`\
 `./DAG.sh F`
 <p align="center">
     <img height="200" src="https://github.com/qlalf1457/InfoGenomeR/blob/master/haplotype_graph.png">
