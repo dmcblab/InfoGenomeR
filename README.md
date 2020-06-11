@@ -19,12 +19,13 @@
 # How to generate inputs from BAM
 Please follow the guideline.
 # Usages
-- Breakpoint graph construction.
-`./breakpoint_graph/breakpoint_graph.sh <mode> <sample_name> <cancer_type> <min_ploidy> <max_ploidy> <bicseq_norm> <bicseq_norm_germ> <copy_numbers.control> <fasta_prefix> <haplotype_coverage> <tumor_bam> <normal_bam> <chr_prefix>`\
-- Allele-specific graph construction.
-` ./allele_graph/allele_graph.sh <mode> <copy_numbers.control> <hom_snps.format> <het_snps.format> <fasta>`\
-- Haplotype graph construction.
+- Breakpoint graph construction.\
+`./breakpoint_graph/breakpoint_graph.sh <mode> <sample_name> <cancer_type> <min_ploidy> <max_ploidy> <bicseq_norm> <bicseq_norm_germ> <copy_numbers.control> <fasta_prefix> <haplotype_coverage> <tumor_bam> <normal_bam> <chr_prefix>`
+- Allele-specific graph construction.\
+` ./allele_graph/allele_graph.sh <mode> <copy_numbers.control> <hom_snps.format> <het_snps.format> <fasta>`
+- Haplotype graph construction.\
 `./haplotype_graph/haplotype_graph.sh`
+
 # Tutorials
 - Download demo files. Demo contains input files for InfoGenomeR. 
 - Tutorial 1: a simiulated cancer genome (haplotype coverage 5X, purity 75%) has 162 somatic SVs (true_SV_sets_somatic).\
@@ -45,5 +46,5 @@ Run a script for breakpoint graph construction.\
 `./breakpoint_graph.sh somatic sample1 sample1 1.5 5 bicseq_norm bicseq_norm_germ copy_numbers.control hg19 5 null null 0`\
 It takes an hour during five iterations and outputs SVs, copy numbers and a breakpoint graph.
 # Check performance for SV calls.
-`Rscript SV_performance.R SVs 0 0 fmeasure 1000`\
+`Rscript SV_performance.R SVs true_SV_sets_somatic 0 0`\
 precision: 0.9552239 recall: 0.8050314 fmeasure: 0.8737201
