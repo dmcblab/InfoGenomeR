@@ -12,10 +12,9 @@
 - BICseq2
 
 # Inputs
-- BICseq norm files (bicseq_norm, bicseq_norm_germ)
+- genome-binning read depths (cn_norm, cn_norm_germ)
 - Initial SV calls (delly.format, manta.format, novobreak.format)
 - Non-properly paired reads (NPE.fq1, NPE.fq2)
-- Segmentation file for a control genome (copy_numbers.control)
 - SNP calls (het_snps.format, hom_snps.format)
 # How to generate inputs from BAM
 Please follow the guideline.
