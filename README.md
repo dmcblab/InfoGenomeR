@@ -64,11 +64,11 @@ It takes a day during 25 iterations (maximum 24 threads and 256Gb memory).
 `Rscript ACN_GRAPH_phased_ver_haplotype_phased.R 3 8 11 15 19`\
 `./DAG.sh F`
 <p align="center">
-    <img height="300" src="https://github.com/qlalf1457/InfoGenomeR/blob/master/haplotype_graph.png">
+    <img height="300" src="https://github.com/YeonghunL/InfoGenomeR/blob/master/haplotype_graph.png">
   </a>
 </p>
 <p align="center">
-    <img height="150" src="https://github.com/qlalf1457/InfoGenomeR/blob/master/karyotype.png">
+    <img height="150" src="https://github.com/YeonghunL/InfoGenomeR/blob/master/karyotype.png">
   </a>
 </p>
 
