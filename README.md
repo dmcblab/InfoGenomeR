@@ -61,7 +61,7 @@ precision: 0.9552239 recall: 0.8050314 fmeasure: 0.8737201
 `./haplotype_graph/haplotype_graph.sh`\
 It takes a day during 25 iterations (maximum 24 threads and 256Gb memory).
 - Run the script for Eulerian path finding.\
-`./DAG.sh F`\
+`./DAG.sh F`
 - Run the script for plotting the haplotype graph and karyotypes.
 `Rscript ACN_GRAPH.R 3,8,11,15,19`
 
