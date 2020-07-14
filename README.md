@@ -68,8 +68,8 @@ It takes a day during 25 iterations (maximum 24 threads and 256Gb memory).
 </p>
 
 - Enter a directory for a subset of chromosomes, run the Eulerian path finding script, and run the plotting script for the candidate karyotype.\
-`cd euler.15.19`
-`./DAG.sh F`
+`cd euler.15.19`\
+`./DAG.sh F`\
 `Rscript KAR_GRAPH.R`
 
 <p align="center">
