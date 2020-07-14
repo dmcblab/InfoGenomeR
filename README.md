@@ -16,6 +16,10 @@
 - Initial SV calls (delly.format, manta.format, novobreak.format)
 - Non-properly paired reads (NPE.fq1, NPE.fq2)
 - SNP calls (het_snps.format, hom_snps.format)
+# Outputs
+- Haplotype-resolved SVs and CNAs (SVs.CN_opt.phased, copy_number.CN_opt.phased)
+- Haplotype graph (node_keys, edge_information.txt)
+- Karyotypes (Eulerian_path.0)
 # How to generate inputs from BAM
 Please follow the guideline.
 # Running InfoGenomeR
