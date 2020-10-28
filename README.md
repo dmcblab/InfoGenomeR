@@ -57,7 +57,9 @@ It takes a few hours during five iterations and outputs SVs, copy numbers and a 
 - Check performance for SV calls from InfoGenomeR.\
 `Rscript SV_performance.R SVs true_SV_sets_somatic 0 0`\
 precision: 0.9552239 recall: 0.8050314 fmeasure: 0.8737201
-
+- Check performance for SV calls from JaBbA.\
+`Rscript SV_performance.R jabba.simple.vcf.format true_SV_sets_somatic 0 0`\
+precision: 0.9444444 recall: 0.7484277 fmeasure: 0.8350877
 # Demo 2
 - Run scripts for breakpoint graph construction.\
 `./breakpoint_graph/breakpoint_graph.sh total A549 LUSC 2 4 bicseq_norm bicseq_norm_germ null hg19 5 null null 0`\
