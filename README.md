@@ -56,7 +56,7 @@ Run scripts for breakpoint graph construction.\
 It takes a few hours during five iterations and outputs SVs, copy numbers and a breakpoint graph at the haplotype level.
 
 - Running JaBbA for comparison study.\
-`jba junctions.vcf coverage.txt -p 0.75 -q 3.4`\
+`jba junctions.vcf coverage.txt -p 0.75 -q 3.4`
 
 - Check performance for SV calls from InfoGenomeR.\
 `Rscript SV_performance.R SVs true_SV_sets_somatic 0 0`\
