@@ -46,7 +46,7 @@ precision: 0.9495798 recall: 0.7106918 fmeasure: 0.8129496\
 `Rscript SV_performance.R novobreak.format true_SV_sets_somatic 0 0`\
 precision: 0.9021739 recall: 0.4968553 fmeasure: 0.6408014
 
-- Running InfoGenomeR
+- Running InfoGenomeR.\
 Merge SV calls.\
 `cat delly.format manta.format novobreak.format > SVs`\
 Run scripts for breakpoint graph construction.\
