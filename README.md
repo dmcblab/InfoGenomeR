@@ -140,7 +140,7 @@ It takes a day during 25 iterations (maximum 24 threads and 256Gb memory).
 - Run the script for plotting the haplotype graph.\
 `Rscript ACN_GRAPH.R 3,8,11,15,19`
 <p align="center">
-    <img height="300" src="https://github.com/YeonghunL/InfoGenomeR/blob/master/haplotype_graph.png">
+    <img height="300" src="https://github.com/YeonghunL/InfoGenomeR/blob/master/doc/haplotype_graph.png">
   </a>
 </p>
 
@@ -150,7 +150,7 @@ It takes a day during 25 iterations (maximum 24 threads and 256Gb memory).
 `Rscript KAR_GRAPH.R`
 
 <p align="center">
-    <img height="150" src="https://github.com/YeonghunL/InfoGenomeR/blob/master/karyotype.png">
+    <img height="150" src="https://github.com/YeonghunL/InfoGenomeR/blob/master/doc/karyotype.png">
   </a>
 </p>
 
