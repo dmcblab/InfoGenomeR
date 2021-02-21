@@ -5,6 +5,7 @@
 # Requirements
 - bwa
 - samtools
+- bedtools
 - blat
 - R
 - lpSolveApi
@@ -22,7 +23,72 @@
 - Karyotypes (Eulerian_path.0)
 - SV cluster and topology (cluster_sv)
 # How to generate inputs from BAM
-Please follow the guideline.
+- We provide scripts for generating inputs using BIC-seq2, DELLY2, Manta, and novobreak, but we recommend that a user follow the guideline of each tool.
+- Generate cn_norm and cn_norm_germ.
+    - Install BICseq2 and modifiedSamtools.
+    - Set configs in the script `bicseq_preprocess.sh` and run the script for cn_norm.
+    - Set configs in the script `bicseq_preprocess_germ.sh` and run the script for cn_norm_germ.
+```reference=hg19.fa
+norm_script=./NBICseq-norm_v0.2.4/NBICseq-norm.pl
+map_file=./NBICseq-norm_v0.2.4/hg19.CRG.50bp/
+read_length=100
+fragment_size=350
+tumor_bam=tumor.bam
+```
+ `./preprocessing/bicseq_preprocess.sh`
+        
+ ```reference=hg19.fa
+norm_script=./NBICseq-norm_v0.2.4/NBICseq-norm.pl
+map_file=./NBICseq-norm_v0.2.4/hg19.CRG.50bp/
+read_length=100
+fragment_size=350
+normal_bam=normal.bam
+```
+`./preprocessing/bicseq_preprocess_germ.sh`
+- Generate NPE.fq1 and NPE.fq2
+```
+samtools view -h -F 2 -b simulated_sorted.bam >simulated_sorted_NPE.bam
+samtools sort -n simulated_sorted_NPE.bam > simulated_sorted_NPE_sorted.bam
+bamToFastq  -i simulated_sorted_NPE_sorted.bam  -fq NPE.fq1 -fq2 NPE.fq2
+```
+- Generate delly SV calls (delly.format).
+    - Install DELLY2, set configs, and run the script.
+```
+ref=hg19.fa
+tsv=samples.tsv
+tumor_bam=tumor.bam
+normal_bam=normal.bam
+```
+`./preprocessing/delly_somatic.sh 3 20`
+- Generate manta SV calls (manta.format).
+    - Install Manta, set configs, and run the script.
+```
+reference=hg19.fa
+script1=./manta-1.1.0.centos5_x86_64/bin/configManta.py
+script2=./runWorkflow.py
+normal_bam=normal.bam
+tumor_bam=tumor.bam
+```
+`./preprocessing/manta_somatic.sh`
+- Generate novobreak SV calls (novobreak.format).
+    - Install novobreak and copy the scripts `./preprocessing/run_novoBreak_orient_partial_corrected.sh` and `./preprocessing/infer_sv_orientation.pl` to the novobreak-installed folder.
+    - Set configs, and run the script.
+```
+novo_dir=./novoBreak_distribution_v1.1.3rc
+reference=hg19.fa
+tumor_bam=tumor.bam
+normal_bam=normal.bam
+```
+`./preprocessing/novobreak_somatic.sh`
+- Generate SNP calls (het_snps.format and hom_snps.format).
+    - Set configs and run the script.
+```
+reference=hg19.fa
+normal_bam=normal.bam
+tumor_bam=tumor.bam
+```
+`./preprocessing/het_SNP_detection_somatic.sh`
+ 
 # Running InfoGenomeR
 - Breakpoint graph construction.\
 `./breakpoint_graph/breakpoint_graph.sh <mode> <sample_name> <cancer_type> <min_ploidy> <max_ploidy> <bicseq_norm> <bicseq_norm_germ> <copy_numbers.control> <fasta_prefix> <haplotype_coverage> <tumor_bam> <normal_bam> <chr_prefix>`
