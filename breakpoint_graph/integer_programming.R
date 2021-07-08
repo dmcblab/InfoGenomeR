@@ -7,7 +7,7 @@ library(lpSolveAPI)
 #marker_size=2;
 marker_size=0;
 false_marker_size=1;
-min_segment_length=50;
+min_segment_length=500; #stability
 ABSOLUTE_subclonal_ccf_ci95_high=0.8;
 min_expected_modal_cn_diff=0.3;
 #ABSOLUTE_CN_limit=14;
@@ -28,7 +28,7 @@ max_SV_min=5000;
 time_out=240;
 SV_max=200; ######## upper bound of a single SV
 CN_max=200; ####### for initial relaxed  problem
-seg.q.tab.threshold=0.95
+seg.q.tab.threshold=0.8 #stability
 ####
 load(paste("ABSOLUTE_output/",args[1],".ABSOLUTE.RData",sep=""));
 ABS_purity_ploidy=read.table(paste("ABSOLUTE_output/output/reviewed/",args[1],".test.ABSOLUTE.table.txt",sep=""), header=T,sep="\t");
