@@ -1,9 +1,9 @@
 `perl edge_filling.pl > edge_filling.fa`;
-`bwa-0.7.15 index edge_filling.fa`;
-`bwa-0.7.15 mem -t 20 -h 20 edge_filling.fa /DASstorage6/leeyh/BG_job/2017.10.10.simulations/simul1/NPE.fq1 /DASstorage6/leeyh/BG_job/2017.10.10.simulations/simul1/NPE.fq2 | samtools view -bS > edge_filling.bam`;
+`bwa index edge_filling.fa`;
+`bwa mem -t 20 -h 20 edge_filling.fa /DASstorage6/leeyh/BG_job/2017.10.10.simulations/simul1/NPE.fq1 /DASstorage6/leeyh/BG_job/2017.10.10.simulations/simul1/NPE.fq2 | samtools view -bS > edge_filling.bam`;
 `samtools sort -n edge_filling.bam > edge_filling_sorted.bam`;
 `samtools view -f 1 -F 3840 edge_filling_sorted.bam > edge_filling_sorted_paired_primary.sam`;
-`bwa-0.7.15 mem -t 20 -h 20 /DATA1/AITL/hg19/ucsc.hg19.fasta /DASstorage6/leeyh/BG_job/2017.10.10.simulations/simul1/NPE.fq1 /DASstorage6/leeyh/BG_job/2017.10.10.simulations/simul1/NPE.fq2 | samtools view -bS > NPE_mapping_to_ref.bam`;
+`bwa mem -t 20 -h 20 /DATA1/AITL/hg19/ucsc.hg19.fasta /DASstorage6/leeyh/BG_job/2017.10.10.simulations/simul1/NPE.fq1 /DASstorage6/leeyh/BG_job/2017.10.10.simulations/simul1/NPE.fq2 | samtools view -bS > NPE_mapping_to_ref.bam`;
 `samtools sort -n NPE_mapping_to_ref.bam > NPE_mapping_to_ref_sorted.bam`;
 `samtools view -f 1 -F 3840 NPE_mapping_to_ref_sorted.bam > NPE_mapping_to_ref_sorted_paired_primary.sam`;
 `mkdir edge_filling_reads`;
