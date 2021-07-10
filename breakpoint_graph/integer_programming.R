@@ -1,5 +1,4 @@
 args <- commandArgs(TRUE)
-library(lpSolve)
 library(lpSolveAPI)
 ####
 #args=c();

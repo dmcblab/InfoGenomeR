@@ -29,7 +29,7 @@ chr=args[4];
         if(length(remove_c)>0){
                 t=t[-remove_c,];
         }
-        write.table(t,paste("./bicseq_norm/",chr_index,".norm.bin", sep=""),quote=F, col.names=T, row.names=F, sep="\t");
+        write.table(t,paste("./cn_norm/",chr_index,".norm.bin", sep=""),quote=F, col.names=T, row.names=F, sep="\t");
 
 
 
@@ -58,5 +58,5 @@ chr=args[4];
                 t=t[-remove_c,];
         }
 
-        write.table(t,paste("./bicseq_norm_germ/",chr_index,".norm.bin",sep=""),quote=F, col.names=T, row.names=F, sep="\t");
+        write.table(t,paste("./cn_norm_germ/",chr_index,".norm.bin",sep=""),quote=F, col.names=T, row.names=F, sep="\t");
 

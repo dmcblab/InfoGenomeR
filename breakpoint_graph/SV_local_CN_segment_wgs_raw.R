@@ -179,10 +179,10 @@ for(i in 1:23){
 for(FINAL_i in 1:nrow(FINAL)){
 	FINAL[FINAL_i,1]=strsplit(FINAL[FINAL_i,1],"\\.")[[1]][1];
 }
-print("debug1");
+#print("debug1");
 FINAL=data.frame(ID="Sample.1", chrom=FINAL[,1], loc.start=FINAL[,2], loc.end=FINAL[,3], num.mark=FINAL[,4], seg.mean=FINAL[,7], bstat=NA, pval=NA, lcl=NA, ucl=NA,"brp[l - 1, 1]"=FINAL[,2],"brp[l, 1]"=FINAL[,3])
 FINAL=FINAL[order(FINAL[,2],FINAL[,3]),];
-print("debug2");
+#print("debug2");
 names(FINAL)<-c("ID","chrom","loc.start","loc.end","num.mark","seg.mean","bstat","pval","lcl","ucl","brp[l - 1, 1]","brp[l, 1]")
 
 ############# marker <15#################

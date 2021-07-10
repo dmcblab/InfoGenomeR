@@ -1,10 +1,9 @@
 args=commandArgs(T);
 mode=args[5];
-min_size=1000 ### The true set only contains >1000bp somatic SVs.
 true=read.table(args[2],stringsAsFactors=F);
 true$dif=Inf;
 test=read.table(args[1], stringsAsFactors=F);
-test=test[test[,2]!=test[,4] | abs(test[,3]-test[,5])>min_size,]
+test=test[test[,2]!=test[,4] | abs(test[,3]-test[,5])>1000,] # The true set contains >1000 somatic SVs
 true=true[true[,3] !="X" & true[,6]!="X",]; ## check performance for autochromosomes 
 test=test[test[,2]!="X" & test[,4] !="X",];
 test$dif=Inf;
