@@ -8,14 +8,14 @@
 </p>
 
 # Requirements
-- bwa
-- samtools
-- bedtools
-- blat
-- R
-- lpSolveApi
-- ABSOLUTE
-- BICseq2
+- bwa (version 0.7.15)
+- samtools (version 1.3)
+- bedtools (version 1.3)
+- blat (version 36)
+- R (version 3.4.3)
+- lpSolveApi (version 5.5.2.0.17)
+- ABSOLUTE (version 1.0.6)
+- BICseq2 (version 0.7.2)
 
 # Inputs
 - genome-binning read depths (cn_norm, cn_norm_germ)
