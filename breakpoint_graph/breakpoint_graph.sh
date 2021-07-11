@@ -260,7 +260,7 @@ do
 	if [[ $test1 -eq $test2 ]] && [[ $ROUND -eq 1 ]];then
 		if [[ -s $npe_dir ]];then
 			cd iter$iter
-			total_coverage_h=`cat $bin/*.norm.bin  | awk 'BEGIN{sum=0;n=0;}{sum=sum+($2-$1)*$3/100; n=n+1}END{print sum/n}'`
+			total_coverage_h=`cat $bin/*.norm.bin  | awk 'BEGIN{sum=0;n=0;}{sum=sum+($2-$1)*$3/"'$read_length'"; n=n+1}END{print sum/n}'`
 			ploidy_h=`cat ABSOLUTE_output/output/reviewed/*.test.ABSOLUTE.table.txt | awk -F "\t" '{print $5}' | tail -n 1`
 			purity_h=`cat ABSOLUTE_output/output/reviewed/*.test.ABSOLUTE.table.txt | awk -F "\t" '{print $4}' | tail -n 1`
 			bc_h=`echo -e "$total_coverage_h\t$ploidy_h\t$purity_h" | awk '{b=$1/($2*$3+2*(1-$3)); print (b-int(b)<0.499)?int(b):int(b)+1}'`
