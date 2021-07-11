@@ -263,7 +263,7 @@ do
 			total_coverage_h=`cat $bin/*.norm.bin  | awk 'BEGIN{sum=0;n=0;}{sum=sum+($2-$1)*$3/100; n=n+1}END{print sum/n}'`
 			ploidy_h=`cat ABSOLUTE_output/output/reviewed/*.test.ABSOLUTE.table.txt | awk -F "\t" '{print $5}' | tail -n 1`
 			purity_h=`cat ABSOLUTE_output/output/reviewed/*.test.ABSOLUTE.table.txt | awk -F "\t" '{print $4}' | tail -n 1`
-			bc_h=`echo -e "$total_coverage_h\t$ploidy_h\t$purity_h" | awk '{b=$1/$2*$3; print (b-int(b)<0.499)?int(b):int(b)+1}'`
+			bc_h=`echo -e "$total_coverage_h\t$ploidy_h\t$purity_h" | awk '{b=$1/($2*$3+2*(1-$3)); print (b-int(b)<0.499)?int(b):int(b)+1}'`
 			base_coverage=$bc_h
 			Rscript $library/remapping/unbalanced_nodes.R
 			perl $library/remapping/edge_filling_job_optimized.pl $fasta_prefix.fa $npe_dir $base_coverage $library $search_length $CIGAR $read_length $chr_prefix> edge_probability
