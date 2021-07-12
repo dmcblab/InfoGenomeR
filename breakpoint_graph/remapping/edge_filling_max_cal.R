@@ -2,7 +2,7 @@ args=commandArgs(T);
 
 search_length=as.integer(args[4]);
 
-library(plot3D)
+#library(plot3D)
 t=read.table(args[1]);
 t$V2=abs(t$V2);
 t$V4=abs(t$V4);
@@ -21,7 +21,7 @@ if(nrow(t)==0){
 
 	z=z[z!=0];
 	options(scipen = 999);
-	if(max(round(z))>2){
+	if(length(z)>0 && max(round(z))>2){
 		if(max(round(z))>4){
                         print(max(ppois(round(z),as.integer(args[2])*as.integer(args[3]))));
 #			print(1);

@@ -1,0 +1,146 @@
+#!/bin/bash
+library=$InfoGenomeR_lib\/allele_graph
+haplotype_path=$Haplotype_path
+POSITIONAL=()
+thread=1
+while [[ $# -gt 0 ]]; do
+  key="$1"
+  case $key in
+    -m|--mode)
+      mode="$2"
+      shift
+      shift
+      ;;
+    -s|--germ_LocSeq_result)
+      germ_LocSeq_result=`readlink -f "$2"`
+      shift
+      shift
+      ;;
+    -o|--breakpoint_graph_dir)
+      out_dir=`readlink -f "$2"`
+      shift
+      shift
+      ;;
+    -g|--ref_genome)
+      fasta_prefix=`readlink -f "$2"`
+      shift
+      shift
+      ;;
+    -t|--threads)
+      thread="$2"
+      shift
+      shift
+      ;;
+    -v|--version)
+      echo "1.0.1"
+      exit 1
+      ;;
+    -h|--help)
+      echo -e "Usage: allele_graph <hom_snps.format> <het_snps.format> [options]\n"
+      echo -e "Options:"
+      echo -e  "\t-m, --mode (required)\n \t\t Select the mode (germline, total, somatic)
+\t-s, --germ_LocSeq_result (required for somatic mode) \n \t\t Local segmentation results from a control genome.
+\t-g, --ref_genome (required for NP reads mapping) \n \t\t Fasta prefix (hg19 or hg38). Enter the prefix without .2bit and .fa extension.
+\t-o, --breakpoint_graph_dir \n \t\t The output directory of breakpoint graph construciton
+\t-t, --threads \n \t\t The number of threads
+\t-h, --help\n
+"
+      exit 1
+      ;;
+    *)
+     POSITIONAL+=("$1") # save it in an array for later
+     shift
+     ;;
+  esac
+done
+
+set -- "${POSITIONAL[@]}" # restore positional parameters
+
+echo "InfoGenomeR_lib = ${InfoGenomeR_lib}"
+if [[ ! -s ${InfoGenomeR_lib}/allele_graph ]];then
+        echo "set the InfoGenomeR_lib path correctly"
+        exit 1
+fi
+echo "haplotype_path = ${Haplotype_path}"
+if [[ ! -s ${haplotype_path} ]];then
+	echo "set the haplotype path correctly"
+	exit 1
+fi
+
+echo "mode = ${mode}"
+if [[ ${mode} == "" ]];then
+        echo "set the mode; total, germline, or somatic"
+        exit 1
+fi
+echo "germ_LocSeq_result = ${germ_LocSeq_result}"
+if [[ $mode == "somatic" ]];then
+        if [[ $germ_LocSeq_result == "" ]];then
+                echo "germ_LocSeq_result is required";
+                exit 1
+        fi
+fi
+if [[ ! -s $out_dir ]];then
+	echo "The output directory of breakpoint graph construction is not found."
+	exit 1
+fi
+
+echo "The previous_breakpoint_graph = $out_dir"
+
+echo "fasta_prefix = ${fasta_prefix}"
+if [[ ! -s ${fasta_prefix}.fa ]] || [[ ! -s ${fasta_prefix}.2bit ]];then
+	echo "write the reference genome prefix and check .2bit exists"
+	exit 1
+fi
+thread=echo $thread | awk '{if($1>23){print 23}else{print $1}}'
+echo "thread = ${thread}"
+ref=${fasta_prefix}.fa
+hom=`readlink -f "$1"`
+echo -e "hom = $hom"
+if [[ $1 == "" ]] || [[ ! -s $hom ]];then
+        echo "Homozygopus SNPs are required"
+        exit 1
+fi
+het=`readlink -f "$2"`
+echo -e "het = $het"
+if [[ $1 == "" ]] || [[ ! -s $het ]];then
+        echo "Heterozygous SNPs are required"
+        exit 1
+fi
+
+
+cd $out_dir
+iter=`ls -l | grep -E 'iter[1-9]?[0-9]?[0-9]$' | awk 'BEGIN{max=0}{split($9,f,"iter"); if(max<f[2]) max=f[2];}END{print max}'`
+
+echo -n "" > exclude
+if [[ $mode == "somatic" ]];then
+        cat $germ_LocSeq_result | awk '{if($6 < -0.5 || $6 > 0.3 ) print $2"\t"$3"\t"$4}' > exclude
+fi
+
+final_iter=$(($iter -1 ));
+
+for i in `seq 1 $final_iter`;do
+        if [[ -s iter$i\/exclude ]];then
+                cat iter$i\/exclude >> exclude
+        fi
+done
+
+cd iter$iter
+echo "tagging homologous recombinations..."
+$library/HR_tag $library $ref;
+
+cp ../exclude ./
+cp $hom ./hom_snps.format
+cp $het ./het_snps.format
+echo "ACN estimation..."
+if [[ -s exclude ]];then
+	Rscript $library/snps_remove.R
+	$library/ACN_estimation $library T $haplotype_path $thread
+else
+        $library/ACN_estimation $library F $haplotype_path $thread
+fi
+
+echo "Imbalanced SNPs phasing..."
+Rscript $library/SNP_phasing_decision_boundary_ver_with_homozygous.R $haplotype_path
+echo "genotype formatting..."
+Rscript $library/genotype_format_for_popul_phasing.R  $haplotype_path
+echo "Allele-specific graph construction is finished"
