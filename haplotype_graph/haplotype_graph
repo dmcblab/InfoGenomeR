@@ -1,0 +1,69 @@
+#!/bin/bash
+library=$InfoGenomeR_lib\/haplotype_graph
+haplotype_path=$Haplotype_path
+POSITIONAL=()
+thread=1
+while [[ $# -gt 0 ]]; do
+  key="$1"
+  case $key in
+    -t|--threads)
+      thread="$2"
+      shift
+      shift
+      ;;
+    -o|--allele_graph_dir)
+      out_dir=`readlink -f "$2"`
+      shift
+      shift
+      ;;
+    -h|--help)
+      echo -e "Usage: haplotype_graph [options]\n"
+      echo -e "\t-o, --allele_graph_dir \n \t\t The output directory of allele graph construciton
+\t-t, --threads \n \t\t The number of threads
+\t-h, --help\n
+"
+      exit 1
+      ;;
+    *)
+     POSITIONAL+=("$1") # save it in an array for later
+     shift
+     ;;
+  esac
+done
+set -- "${POSITIONAL[@]}" # restore positional parameters
+
+echo "InfoGenomeR_lib = ${InfoGenomeR_lib}"
+if [[ ! -s ${InfoGenomeR_lib}/haplotype_graph ]];then
+        echo "set the InfoGenomeR_lib path correctly"
+        exit 1
+fi
+echo "haplotype_path = ${Haplotype_path}"
+if [[ ! -s ${haplotype_path} ]];then
+        echo "set the haplotype path correctly"
+        exit 1
+fi
+thread=`echo $thread | awk '{if($1>23){print 23}else{print $1}}'`
+echo "thread = ${thread}"
+if [[ ! -s $out_dir ]];then
+        echo "The output directory of allele graph construction is not found."
+        exit 1
+fi
+echo "The previous_allele_graph = $out_dir"
+
+
+cd $out_dir
+
+iter=`ls -l | grep -E 'iter[1-9]?[0-9]?[0-9]$' | awk 'BEGIN{max=0}{split($9,f,"iter"); if(max<f[2]) max=f[2];}END{print max}'`
+
+echo "Haplotype phasing..."
+$library\/phasing/phasing_threads $thread
+
+cd iter$iter
+
+Rscript $library/ACN_order_by_haplotype.R
+Rscript $library/AS_SV_haplotype_phased.R
+cp SVs.AS_SV.haplotype_phased ../
+#Rscript $library/ACN_GRAPH_phased_ver_haplotype_phased.R
+#Rscript $library/ACN_GRAPH_phased_ver_haplotype_phased_hilight.R F
+Rscript $library/TO_bpgraph_hidden_node_for_connectivity_chromosomes_job_ACN.R $library
+

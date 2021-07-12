@@ -2,6 +2,7 @@ library(fitdistrplus)
 library(plyr)
 args=commandArgs(T)
 purity=as.numeric(args[2]);
+purity=min(0.97, purity)
 #NB_MEAN=as.numeric(args[2]);
 #NB_DIS=as.numeric(args[3]);
 updown=as.numeric(args[5]);

@@ -1,3 +1,4 @@
+## We are updating the original scripts to be usable!! Please wait for a few days
 
 # InfoGenomeR
 - InfoGenomeR is the Integrative Framework for Genome Reconstruction that uses a breakpoint graph to model the connectivity among genomic segments at the genome-wide scale. InfoGenomeR integrates cancer purity and ploidy, total CNAs, allele-specific CNAs, and haplotype information to identify the optimal breakpoint graph representing cancer genomes.
@@ -13,30 +14,35 @@
     - samtools (version 1.3)
     - bedtools (version 1.3)
     - blat (version 36)
+    - blastn (version 2.2.30+)
 - R (version 3.4.3) and libraries
     - lpSolveAPI (version 5.5.2.0.17)
     - ABSOLUTE (version 1.0.6)
+    - fitdistrplus (version 1.1.11)
+    - plyr (version 1.8.4)
 - BIC-seq2 (version 0.7.2)
 # Environment settings
-- set the BIC-seq2 path and InfoGenomeR_lib.
+- download haplotype DAGs, and bwa-indexed reference genome if it doesn't exist (GRCh37 or GRCh38) (to be uploaded in Zenodo).
+
+- set the BIC-seq2 path, InfoGenomeR_lib, and Haplotype path.
 ```
 export BICseq2_path=/home/you/NBICseq-seg_v0.7.2
 export InfoGenomeR_lib=/home/you/InfoGenomeR
+export Haplotype_path=/home/you/haplotype_1000G ## for GRCh37. If GRCh38 was used, export Haplotype_path=/home/you/haplotype_1000G_38
 ```
 
-- set the scripts to be excutable
+- set the PATH environment.
 ```
-chmod 777 /home/you/InfoGenomeR/*/*.sh 
+export PATH=/home/you/InfoGenomeR/breakpoint_graph:/home/you/InfoGenomeR/allele_graph:/home/you/InfoGenomeR/haplotype_graph:$PATH
 ```
-- download for haplotype DAGs
 
 # Inputs
 - genome-binning read depths (cn_norm, cn_norm_germ)
 - Initial SV calls (delly.format, manta.format, novobreak.format)
 - Non-properly paired reads (NPE.fq1, NPE.fq2)
-- Reference genome (hg19.fa, hg19.fa.fai, hg19.2bit) or (hg38.fa, hg38.fa.fai, hg38.2bit)
+- Reference genome (GRCh37.fa, .fa.fai, .2bit, .bwt2) or (GRCh38.fa,.fa.fai, .2bit, .bwt2)
 - SNP calls (het_snps.format, hom_snps.format)
-- Haplotype DAGs (haplotype_1000G) or (haplotype_1000G_hg38)
+- Haplotype DAGs (haplotype_1000G) or (haplotype_1000G_GRCh38)
 
 # Outputs
 - Haplotype-resolved SVs and CNAs (SVs.CN_opt.phased, copy_number.CN_opt.phased)
@@ -45,8 +51,9 @@ chmod 777 /home/you/InfoGenomeR/*/*.sh
 - SV cluster and topology (cluster_sv)
 
 # Running InfoGenomeR
+- Breakpoint graph construction
 ```
-Usage: ./breakpoint_graph.sh <SVs> <cn_norm> [options]
+Usage: breakpoint_graph <SVs> <cn_norm> [options]
 
 Options:
         -m, --mode (required)
@@ -60,13 +67,40 @@ Options:
         -d, --npe_dir (optional)
                  Directory that contains NPE.fq1 and NPE.fq2 (non-properly paired reads). If it is not assigned, InfoGenomeR runs without NP reads mapping.
         -g, --ref_genome (required for NP reads mapping)
-                 Fasta prefix (hg19 or hg38). Enter the prefix without .2bit and .fa extension.
+                 Fasta prefix (GRCh37 or GRCh38). Enter the prefix without .2bit and .fa extension.
         -c, cn_norm_germ (required for somatic mode)
                  Directory that contains copy number bins from a control genome.
         -s, --germ_LocSeq_result (required for somatic mode)
                  Local segmentation results from a control genome.
         -o, --out_dir
                  If it already exists, results are overlaid (default: InfoGenomeR_job)
+        -h, --help
+```
+- Allele-specific graph construction
+```
+Usage: allele_graph <hom_snps.format> <het_snps.format> [options]
+
+Options:
+        -m, --mode (required)
+                 Select the mode (germline, total, somatic)
+        -s, --germ_LocSeq_result (required for somatic mode)
+                 Local segmentation results from a control genome.
+        -g, --ref_genome (required for NP reads mapping)
+                 Fasta prefix (hg19 or hg38). Enter the prefix without .2bit and .fa extension.
+        -o, --breakpoint_graph_dir
+                 The output directory of breakpoint graph construciton
+        -t, --threads
+                 The number of threads
+        -h, --help
+```
+- Haplotype graph construction
+```
+Usage: haplotype_graph [options]
+
+        -o, --allele_graph_dir
+                 The output directory of allele graph construciton
+        -t, --threads
+                 The number of threads
         -h, --help
 ```
 # How to generate inputs from BAM
@@ -138,14 +172,6 @@ tumor_bam=tumor.bam
 ```
 `./preprocessing/het_SNP_detection_somatic.sh`
  
-# Running InfoGenomeR (Old, to be updated)
-- Breakpoint graph construction.\
-`./breakpoint_graph/breakpoint_graph.sh <mode> <sample_name> <cancer_type> <min_ploidy> <max_ploidy> <bicseq_norm> <bicseq_norm_germ> <copy_numbers.control> <fasta_prefix> <haplotype_coverage> <tumor_bam> <normal_bam> <chr_prefix>`
-- Allele-specific graph construction.\
-` ./allele_graph/allele_graph.sh <mode> <copy_numbers.control> <hom_snps.format> <het_snps.format> <fasta>`
-- Haplotype graph construction.\
-`./haplotype_graph/haplotype_graph.sh`
-
 # Demos 
 - Download demo files. Demo contains input files for InfoGenomeR. 
 - Demo 1: a simiulated cancer genome (haplotype coverage 5X, triploidy, purity 75%) that has 162 somatic SVs (true_SV_sets_somatic). [Demo 1](http://www.gcancer.org/InfoGenomeR/demo1.tar.gz).
@@ -153,29 +179,42 @@ tumor_bam=tumor.bam
 From initial 4054 SV calls, InfoGenomeR reconstructs der(11)t(8;11) and der(19)t(8;19)x2.
 
 # Demo 1
-- Check baselines for SVs.\
-`Rscript $InfoGenomeR_lib\/etc/SV_performance.R delly.format true_SV_sets_somatic`\
-precision: 0.6902174 recall: 0.7987421 fmeasure: 0.7405248\
-`Rscript $InfoGenomeR_lib\/etc/SV_performance.R manta.format true_SV_sets_somatic`\
-precision: 0.9495798 recall: 0.7106918 fmeasure: 0.8129496\
-`Rscript $InfoGenomeR_lib\/etc/SV_performance.R novobreak.format true_SV_sets_somatic`\
+```
+wget http://www.gcancer.org/InfoGenomeR/demo1.tar.gz
+tar -xvf demo1.tar.gz
+cd demo1
+cp $InfoGenomeR_lib/etc/SV_performance.R ./
+```
+- Check baselines for SVs.
+```
+## delly
+Rscript SV_performance.R delly.format true_SV_sets_somatic
+precision: 0.6902174 recall: 0.7987421 fmeasure: 0.7405248
+## manta
+Rscript SV_performance.R manta.format true_SV_sets_somatic
+precision: 0.9495798 recall: 0.7106918 fmeasure: 0.8129496
+## novobreak
+Rscript SV_performance.R novobreak.format true_SV_sets_somatic
 precision: 0.9021739 recall: 0.4968553 fmeasure: 0.6408014
-
-- Running InfoGenomeR.\
-Merge SV calls.\
-`cat delly.format manta.format novobreak.format > SVs`\
-Run scripts for breakpoint graph construction.\
-`breakpoint_graph.sh -m somatic -d ./ SVs ./cn_norm -g hg19 -c cn_norm_germ -s copy_numbers.control -o somatic_job`\
-`./allele_graph/allele_graph.sh somatic copy_numbers.control hom_snps.format het_snps.format hg19.fa`\
-`./haplotype_graph/haplotype_graph.sh`\
+```
+- Running InfoGenomeR.
+```
+## Merge SV calls.
+cat delly.format manta.format novobreak.format > SVs
+## breakpoint graph construction
+breakpoint_graph -m somatic -d ./ SVs ./cn_norm -g /home/you/GRCh37 -c cn_norm_germ -s copy_numbers.control -o somatic_job
+## allele graph construction
+allele_graph -m somatic -s copy_numbers.control hom_snps.format het_snps.format -o somatic_job -g /home/you/GRCh37 -t 23
+## haplotype graph construction
+haplotype graph -o somatic_job -t 6` ## 40GB memory per one thread.
+```
 It takes a few hours during five iterations and outputs SVs, copy numbers and a breakpoint graph at the haplotype level.
 
-- Running JaBbA for comparison study.\
-`jba junctions.vcf coverage.txt -p 3.4 -q 0.75`
-
-- Check performance for SV calls from InfoGenomeR.\
-`Rscript $InfoGenomeR_lib\/etc/SV_performance.R SVs true_SV_sets_somatic`\
-precision: 0.9552239 recall: 0.8050314 fmeasure: 0.8737201
+- Check performance for SV calls from InfoGenomeR.
+```
+Rscript SV_performance.R somatic_job/SVs.AS_SV.haplotype_phased true_SV_sets_somatic
+precision:0.955556 recall:0.811321 fmeasure: 0.877551
+```
 # Demo 2 (Old, to be updated)
 - Run scripts for breakpoint graph construction.\
 `./breakpoint_graph/breakpoint_graph.sh total A549 LUSC 2 4 bicseq_norm bicseq_norm_germ null hg19 5 null null 0`\

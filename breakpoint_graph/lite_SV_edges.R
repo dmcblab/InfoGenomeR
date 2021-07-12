@@ -1,10 +1,11 @@
 args=commandArgs(T);
-thres=as.numeric(args[2]);
+thres=as.numeric(args[3]);
 t=read.table("unsatisfied.list.no_telomere_ends",stringsAsFactors=F)
-sv=read.table("SVs.CN_opt.filtered",stringsAsFactors=F);
+sv=read.table(args[1],stringsAsFactors=F)
+#sv=read.table("SVs.CN_opt.filtered",stringsAsFactors=F);
 
 t=t[t[,5]==0,];
-raw_sv=read.table(args[1],stringsAsFactors=F);
+raw_sv=read.table(args[2],stringsAsFactors=F);
 one_side= if (args[3]=="T") T else F
 
 raw_sv$ori1=NA;

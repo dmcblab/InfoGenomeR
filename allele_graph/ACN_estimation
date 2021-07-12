@@ -1,0 +1,48 @@
+#!/bin/bash
+
+##pids""
+##RESULT=0;
+
+library=$1
+prefiltered=$2
+snp_count_path=`readlink -f $3`
+thread=$4
+updown=7
+
+purity=`cat ABSOLUTE_output/output/reviewed/*.test.ABSOLUTE.table.txt  | tail -n 1  | cut -f4`
+
+declare -a arr;
+let k=0
+for i in `seq 1 23`; do
+        arr[$k]="Rscript $library/ACN_estimation.R $i $purity $snp_count_path $prefiltered $updown"
+	((++k))
+done
+
+k=$(($k-1));
+thread=$(($thread-1));
+for z in `seq 0 $thread`;do
+       eval ${arr[$k]} &
+       pids[$z]=$!;
+       k=$(($k -1));
+done
+
+while [ $k -ge 0 ];do
+
+	for l in `seq 0 $thread`;do
+		n=`ps | grep ${pids[$l]} | wc -l`;
+		if [ $n -eq 0 ] && [ $k -ge 0 ];then
+			eval ${arr[$k]} &
+			pids[$l]=$!;
+			k=$(($k -1));
+		fi
+	done
+	sleep 1;
+
+done
+
+for z in `seq 0 $thread`;do
+	wait ${pids[$z]};
+done
+
+
+Rscript $library/ACN_estimation_merge.R

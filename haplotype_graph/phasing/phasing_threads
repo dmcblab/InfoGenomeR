@@ -1,0 +1,45 @@
+#!/bin/bash
+thread=$1
+library=$InfoGenomeR_lib\/haplotype_graph/phasing
+haplotype_path=$Haplotype_path
+
+iter=`ls -l | grep -E 'iter[1-9]?[0-9]?[0-9]$' | awk 'BEGIN{max=0}{split($9,f,"iter"); if(max<f[2]) max=f[2];}END{print max}'`
+
+cd iter$iter
+
+
+declare -a arr;
+let k=0
+for i in `seq 1 22`;do
+	arr[$k]="$library/phasing $haplotype_path/chr$i.chr$i.bgl.dag.align genotype.format.$i  >  genotype.format.$i.phased && paste $haplotype_path/chr$i.marker   genotype.format.$i.phased  | cut -f1,2,4,6,7 > diploid_haplotype.$i"
+	((++k))
+done
+i="X"
+        arr[$k]="$library/phasing $haplotype_path/chr$i.chr$i.bgl.dag.align genotype.format.$i  >  genotype.format.$i.phased && paste $haplotype_path/chr$i.marker   genotype.format.$i.phased  | cut -f1,2,4,6,7 > diploid_haplotype.$i"
+	((++k))
+
+k=$(($k-1));
+thread=$(($thread-1));
+for z in `seq 0 $thread`;do
+       eval ${arr[$k]} &
+       pids[$z]=$!;
+       k=$(($k -1));
+done
+
+while [ $k -ge 0 ];do
+
+        for l in `seq 0 $thread`;do
+                n=`ps | grep ${pids[$l]} | wc -l`;
+                if [ $n -eq 0 ] && [ $k -ge 0 ];then
+                        eval ${arr[$k]} &
+                        pids[$l]=$!;
+                        k=$(($k -1));
+                fi
+        done
+        sleep 1;
+
+done
+
+for z in `seq 0 $thread`;do
+        wait ${pids[$z]};
+done
