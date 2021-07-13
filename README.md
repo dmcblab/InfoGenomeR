@@ -9,7 +9,7 @@
 </p>
 
 # Requirements
-- Executables in your PATH
+- Executables in your PATH (InfoGenomeR/ext)
     - bwa (version 0.7.15)
     - samtools (version 1.3)
     - bedtools (version 1.3)
@@ -33,7 +33,7 @@ export Haplotype_path=/home/you/haplotype_1000G ## for GRCh37. If GRCh38 was use
 
 - set the PATH environment.
 ```
-export PATH=/home/you/InfoGenomeR/breakpoint_graph:/home/you/InfoGenomeR/allele_graph:/home/you/InfoGenomeR/haplotype_graph:$PATH
+export PATH=$InfoGenomeR_lib/breakpoint_graph:$InfoGenomeR_lib/allele_graph:$InfoGenomeR_lib/haplotype_graph:$PATH
 ```
 
 # Inputs
@@ -57,17 +57,21 @@ Usage: breakpoint_graph <SVs> <cn_norm> [options]
 
 Options:
         -m, --mode (required)
-                 Select the mode (germline, total, somatic)
+                 Select the mode (germline, total, somatic, simplification)
         -i, --lambda_ini (required)
                  Initial lambda for the first round iterations (default: 1)
         -f, --lambda_fi (required)
                  Final lambda for the second round iterations (default: 4)
         -t, --cancer_type (optional)
                  Cancer type used for ABSOLUTE estimation (BRCA, GBM, OV, ...). If unknown, write null.
+        -n, --min_ploidy (optional)
+                 minimum cancer ploidy used for ABSOLUTE estimation (default: 1.5)
+        -x, --max_ploidy (optional)
+                 maximum cnacer ploidy used for ABSOLUTE estimation (default: 5)
         -d, --npe_dir (optional)
                  Directory that contains NPE.fq1 and NPE.fq2 (non-properly paired reads). If it is not assigned, InfoGenomeR runs without NP reads mapping.
         -g, --ref_genome (required for NP reads mapping)
-                 Fasta prefix (GRCh37 or GRCh38). Enter the prefix without .2bit and .fa extension.
+                 Fasta prefix (hg19 or hg38). Enter the prefix without .2bit and .fa extension.
         -c, cn_norm_germ (required for somatic mode)
                  Directory that contains copy number bins from a control genome.
         -s, --germ_LocSeq_result (required for somatic mode)
@@ -172,13 +176,13 @@ tumor_bam=tumor.bam
 ```
 `./preprocessing/het_SNP_detection_somatic.sh`
  
-# Demos 
+# Tutorials
 - Download demo files. Demo contains input files for InfoGenomeR. 
-- Demo 1: a simiulated cancer genome (haplotype coverage 5X, triploidy, purity 75%) that has 162 somatic SVs (true_SV_sets_somatic). [Demo 1](http://www.gcancer.org/InfoGenomeR/demo1.tar.gz).
-- Demo 2: A549 cancer cell line that is triploidy with der(11)t(8;11) and der(19)t(8;19)x2. It has chromothripsis on chromosome 15. [Demo 2](http://www.gcancer.org/InfoGenomeR/demo2.tar.gz).
+- Tutorial 1: a simiulated cancer genome (haplotype coverage 5X, triploidy, purity 75%) that has 162 somatic SVs (true_SV_sets_somatic). [Demo 1](http://www.gcancer.org/InfoGenomeR/demo1.tar.gz).
+- Tutorial 2: A549 cancer cell line that is triploidy with der(11)t(8;11) and der(19)t(8;19)x2. It has chromothripsis on chromosome 15. [Demo 2](http://www.gcancer.org/InfoGenomeR/demo2.tar.gz).
 From initial 4054 SV calls, InfoGenomeR reconstructs der(11)t(8;11) and der(19)t(8;19)x2.
 
-# Demo 1
+# Tutorial 1
 ```
 wget http://www.gcancer.org/InfoGenomeR/demo1.tar.gz
 tar -xvf demo1.tar.gz
@@ -199,6 +203,10 @@ precision: 0.9021739 recall: 0.4968553 fmeasure: 0.6408014
 ```
 - Running InfoGenomeR.
 ```
+## Generate a germline copy number profile
+breakpoint_graph -m germline germline_delly.format -o germline_job cn_norm_germ
+cp germline_job/copy_numbers ./copy_numbers.control
+
 ## Merge SV calls.
 cat delly.format manta.format novobreak.format > SVs
 ## breakpoint graph construction
@@ -206,7 +214,7 @@ breakpoint_graph -m somatic -d ./ SVs ./cn_norm -g /home/you/GRCh37 -c cn_norm_g
 ## allele graph construction
 allele_graph -m somatic -s copy_numbers.control hom_snps.format het_snps.format -o somatic_job -g /home/you/GRCh37 -t 23
 ## haplotype graph construction
-haplotype graph -o somatic_job -t 6` ## 40GB memory per one thread.
+haplotype_graph -o somatic_job -t 6 ## 40GB memory per one thread.
 ```
 It takes a few hours during five iterations and outputs SVs, copy numbers and a breakpoint graph at the haplotype level.
 
@@ -215,7 +223,7 @@ It takes a few hours during five iterations and outputs SVs, copy numbers and a 
 Rscript SV_performance.R somatic_job/SVs.AS_SV.haplotype_phased true_SV_sets_somatic
 precision:0.955556 recall:0.811321 fmeasure: 0.877551
 ```
-# Demo 2 (Old, to be updated)
+# Tutorial 2 (Old, to be updated)
 - Run scripts for breakpoint graph construction.\
 `./breakpoint_graph/breakpoint_graph.sh total A549 LUSC 2 4 bicseq_norm bicseq_norm_germ null hg19 5 null null 0`\
 `./breakpoint_graph/breakpoint_graph_simplifying.sh total A549 LUSC 2 4 bicseq_norm bicseq_norm_germ null hg19 5 null null 0`\

@@ -48,7 +48,11 @@ ABS_output_duplicated=ABS_output;
 #ABS_output[ABS_output$expected_cn>=ABSOLUTE_CN_limit,"expected_cn"]=Inf;
 ABS_input=read.table(args[2], header=T)
 colnames(ABS_input)=c("Chromosome","Start.bp","End.bp", "Probes", "Segment_Mean")
+
+defaultW <- getOption("warn")
+options(warn = -1)
 new=merge(ABS_input, ABS_output, by=c("Chromosome","Start.bp", "End.bp"), all.x=T)
+options(warn = defaultW)
 
 new=new[order(new[,1],new[,2]),];
 
