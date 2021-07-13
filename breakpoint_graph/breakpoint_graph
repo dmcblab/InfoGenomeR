@@ -39,6 +39,16 @@ while [[ $# -gt 0 ]]; do
       shift
       shift
       ;;
+    -n|--min_ploidy)
+     min_ploidy="$2"
+     shift
+     shift
+     ;;
+    -x|--max_ploidy)
+     max_ploidy="$2"
+     shift
+     shift
+     ;;
     -d|--npe_dir)
       npe_dir=`readlink -f "$2"`
       shift
@@ -60,7 +70,7 @@ while [[ $# -gt 0 ]]; do
       shift
       ;;
     -o|--out_dir)
-      out_dir="$2"
+      out_dir=`readlink -f "$2"`
       shift
       shift
       ;;
@@ -71,10 +81,12 @@ while [[ $# -gt 0 ]]; do
     -h|--help)
       echo -e "Usage: breakpoint_graph <SVs> <cn_norm> [options]\n"
       echo -e "Options:"
-      echo -e  "\t-m, --mode (required)\n \t\t Select the mode (germline, total, somatic)
+      echo -e  "\t-m, --mode (required)\n \t\t Select the mode (germline, total, somatic, simplification)
 \t-i, --lambda_ini (required) \n \t\t Initial lambda for the first round iterations (default: 1)
 \t-f, --lambda_fi (required) \n \t\t Final lambda for the second round iterations (default: 4)
 \t-t, --cancer_type (optional) \n \t\t Cancer type used for ABSOLUTE estimation (BRCA, GBM, OV, ...). If unknown, write null.
+\t-n, --min_ploidy (optional) \n \t\t minimum cancer ploidy used for ABSOLUTE estimation (default: 1.5)
+\t-x, --max_ploidy (optional) \n \t\t maximum cnacer ploidy used for ABSOLUTE estimation (default: 5)
 \t-d, --npe_dir (optional) \n \t\t Directory that contains NPE.fq1 and NPE.fq2 (non-properly paired reads). If it is not assigned, InfoGenomeR runs without NP reads mapping.
 \t-g, --ref_genome (required for NP reads mapping) \n \t\t Fasta prefix (hg19 or hg38). Enter the prefix without .2bit and .fa extension.
 \t-c, cn_norm_germ (required for somatic mode) \n \t\t Directory that contains copy number bins from a control genome.
@@ -112,6 +124,9 @@ fi
 echo "lambda_ini  = ${lambda_ini}"
 echo "lambda_fi   = ${lambda_fi}"
 echo "cancer_type = ${cancer_type}"
+echo "min_ploidy = ${min_ploidy}"
+echo "max_ploidy = ${max_ploidy}"
+
 if [[ -s $npe_dir\/NPE.fq1 ]] && [[ -s $npe_dir\/NPE.fq2 ]];then
 	echo "NP reads mapping = True"
 else
@@ -140,6 +155,8 @@ if [[ $2 == "" ]] || [[ ! -s $cn_norm ]];then
 fi
 echo "cn_norm_germ = ${cn_norm_germ}"
 echo "germ_LocSeq_result = ${germ_LocSeq_result}"
+
+
 if [[ $mode == "somatic" ]];then
 	if [[ $cn_norm_germ == "" ]];then
 		echo "cn_norm_germ directory is required";
@@ -151,14 +168,25 @@ if [[ $mode == "somatic" ]];then
         fi
 fi
 
+
+
 bin="$cn_norm/"
 normal_bin="$cn_norm_germ/"
-if [[ -s $out_dir ]];then
-	echo "out_dir exists... overlapping"
+
+if [[ $mode != "simplification" ]];then
+	if [[ -s $out_dir ]];then
+		echo "out_dir exists... overlapping"
+	fi
+	mkdir -p $out_dir
+	cd $out_dir
+	cp $SV ./SVs
+else
+	mkdir -p $out_dir
+	cd $out_dir
 fi
-mkdir -p $out_dir
-cd $out_dir
-cp $SV ./SVs
+
+
+
 SV=SVs
 i=1;
 iter=1;
@@ -168,7 +196,6 @@ if [ $mode == "germline" ];then
 	lambda_ini=1;
 	Rscript $library/SV_break_adjustment.R
 	$library/SV_truncated_wgs SVs $bin
-	Rscript $library/SV_break_adjust.R
 	mkdir -p tmp;
 	tmp_folder="$PWD/tmp/"
         Rscript $library/SV_local_CN_segment_wgs_raw.R $SV $i $bin $tmp_folder $bicseq $lambda_ini $bam $chr_prefix;
@@ -192,14 +219,37 @@ if [ $mode == "somatic" ];then
 fi
 
 
-Rscript $library/SV_break_adjustment.R
-$library/SV_truncated_wgs SVs $bin
-
-
-ABSOLUTE_STABLE="F";
-
 ROUND=1
-for iter in {1..100}
+iter_start=1
+if [[ $mode != "simplification" ]];then
+	Rscript $library/SV_break_adjustment.R
+	$library/SV_truncated_wgs SVs $bin
+else
+	sv_lines=`cat SVs | wc -l`
+	new_sv_lines=0;
+	while [[ $sv_lines -ne $new_sv_lines ]];do
+		sv_lines=`cat SVs | wc -l`
+		$library/breakpoint_graph_simple_SVs $bin -m $mode -f $lambda_fi -t $cancer_type -n $min_ploidy -x $max_ploidy -c $normal_bin -o $PWD
+		$library/breakpoint_graph_block_clusters $bin -m $mode -f $lambda_fi -t $cancer_type -n $min_ploidy -x $max_ploidy -c $normal_bin -o $PWD
+		new_sv_lines=`cat SVs | wc -l`
+	done
+        bin="$PWD/cn_norm_simple/"
+        normal_bin="$PWD/cn_norm_germ_simple/"
+
+
+	iter=`ls -l  | awk '{print $9}'|  grep -P '^iter[1-9][0-9]{0,2}$' | awk 'BEGIN{max=0}{split($1,f,"iter"); if(max<f[2]) max=f[2];}END{print max}'`
+	min_simplifying_iter=`ls -l  | awk '{print $9}'|  grep -P '^iter[1-9][0-9]{0,2}.block_clusters$' |  awk 'BEGIN{min=999}{split($1,f,"iter"); split(f[2],g,".block_clusters"); if(min>g[1]) min=g[1];}END{print min}'`
+	cd iter$iter;
+		Rscript $library/TO_bpgraph_hidden_node_for_connectivity.R
+		Rscript $library/lite_SV_edges.R ../iter$min_simplifying_iter\/SVs ../iter1/SVs $search_length F
+		cp SVs.added ../SVs
+	cd ../
+
+	iter_start=$iter+1;
+	ROUND=3
+fi
+ABSOLUTE_STABLE="F";
+for (( iter=$iter_start; iter<=100; iter++ ))
 do
 	mkdir -p iter$iter;
 	cd iter$iter;
@@ -240,7 +290,7 @@ do
 		
 	done
 
-
+        echo "Ploidy and purity estimation..."
 	Rscript $library/ABSOLUTE.R "$cancer_type" $sample $min_ploidy $max_ploidy $ABSOLUTE_STABLE
 	if [[ -s ABSOLUTE_output/output/reviewed/$sample.test.ABSOLUTE.table.txt ]];then
 		echo "pass"
@@ -253,9 +303,10 @@ do
 			exit 1
 		fi
 	fi
+	echo "Ploidy and purity estimation is done"
+	echo "Integer programming..."
 	
-	
-	Rscript $library/integer_programming.R $sample "copy_numbers_ABSOLUTE_input.negative_marker" $SV $read_length> IP.log
+	Rscript $library/integer_programming.R $sample "copy_numbers_ABSOLUTE_input.negative_marker" $SV $read_length > IP.log
 	test1=`cat SVs.CN_opt.filtered | wc -l`
 	test2=`cat SVs | wc -l`
 	
@@ -264,13 +315,14 @@ do
 	if [[ $test1 -eq $test2 ]] && [[ $ROUND -eq 1 ]];then
 		if [[ -s $npe_dir ]];then
 			cd iter$iter
+			echo "Remapping NP reads ..."
 			total_coverage_h=`cat $bin/*.norm.bin  | awk 'BEGIN{sum=0;n=0;}{sum=sum+$3; n=n+1}END{print sum/n}'`
 			ploidy_h=`cat ABSOLUTE_output/output/reviewed/*.test.ABSOLUTE.table.txt | awk -F "\t" '{print $5}' | tail -n 1`
 			purity_h=`cat ABSOLUTE_output/output/reviewed/*.test.ABSOLUTE.table.txt | awk -F "\t" '{print $4}' | tail -n 1`
 			bc_h=`echo -e "$total_coverage_h\t$ploidy_h\t$purity_h" | awk '{b=$1/($2*$3+2*(1-$3)); print (b-int(b)<0.499)?int(b):int(b)+1}'`
 			base_coverage=$bc_h
 			Rscript $library/remapping/unbalanced_nodes.R
-			perl $library/remapping/edge_filling_job_optimized.pl $fasta_prefix.fa $npe_dir $base_coverage $library $search_length $CIGAR $read_length $chr_prefix> edge_probability
+			perl $library/remapping/edge_filling_job_optimized.pl $fasta_prefix.fa $npe_dir $base_coverage $library $search_length $CIGAR $read_length $chr_prefix > edge_probability
 			perl $library/remapping/edge_filling_job_blat_recal.pl $fasta_prefix
 			perl $library/remapping/edge_filling_job_blat_recal_sam_To_bed_re.pl $fasta_prefix.fa $CIGAR $read_length $search_length > edge_filling_sorted_paired_primary.sam.info.recal
 			perl $library/remapping/edge_filling_job_optimized_for_recal_info.pl $library $base_coverage $search_length > edge_probability_recal

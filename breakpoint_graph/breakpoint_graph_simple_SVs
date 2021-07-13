@@ -1,0 +1,249 @@
+#!/bin/bash
+lambda_ini=1
+lambda_fi=4
+min_ploidy=1.5
+max_ploidy=5
+sample=sample1
+cancer_type=null
+out_dir=InfoGenomeR_job
+chr_prefix=0  # The reference genome has "chr" prefix or not
+read_length=100
+bam=null
+normal_bam=null
+POSITIONAL=()
+while [[ $# -gt 0 ]]; do
+  key="$1"
+  case $key in
+    -m|--mode)
+      mode="$2"
+      shift
+      shift
+      ;;
+    -i|--lambda_ini)
+      lambda_ini="$2"
+      shift
+      shift
+      ;;
+    -f|--lambda_fi)
+      lambda_fi="$2"
+      shift
+      shift
+      ;;
+    -n|--min_ploidy)
+     min_ploidy="$2"
+     shift
+     shift
+     ;;
+    -x|--max_ploidy)
+     max_ploidy="$2"
+     shift
+     shift
+     ;;
+    -t|--cancer_type)
+      cancer_type="$2"
+      shift
+      shift
+      ;;
+    -c|--cn_norm_germ)
+      cn_norm_germ=`readlink -f "$2"`
+      shift
+      shift
+      ;;
+    -o|--out_dir)
+      out_dir=`readlink -f "$2"`
+      shift
+      shift
+      ;;
+    -v|--version)
+      echo "v.1.0.1"
+      exit 1
+      ;;
+    -h|--help)
+      echo -e "Usage: breakpoint_graph_simple_SVs  <cn_norm> [options]\n"
+      echo -e "Options:"
+      echo -e  "\t-m, --mode (required)\n \t\t Select the mode (total, somatic)
+\t-f, --lambda_fi (required) \n \t\t Final lambda for the second round iterations (default: 4)
+\t-t, --cancer_type (optional) \n \t\t Cancer type used for ABSOLUTE estimation (BRCA, GBM, OV, ...). If unknown, write null.
+\t-n, --min_ploidy (optional) \n \t\t minimum cancer ploidy used for ABSOLUTE estimation (default: 1.5)
+\t-x, --max_ploidy (optional) \n \t\t maximum cnacer ploidy used for ABSOLUTE estimation (default: 5)
+\t-c, cn_norm_germ (required for somatic mode) \n \t\t Directory that contains copy number bins from a control genome.
+\t-o, --out_dir \n \t\t If it already exists, results are overlaid (default: InfoGenomeR_job)
+\t-h, --help\n
+"
+      exit 1
+      ;;
+    *)  
+     POSITIONAL+=("$1") # save it in an array for later
+     shift
+     ;;
+  esac
+done
+
+set -- "${POSITIONAL[@]}" # restore positional parameters
+
+echo "InfoGenomeR_lib = ${InfoGenomeR_lib}"
+if [[ ! -s ${InfoGenomeR_lib}/breakpoint_graph ]];then
+	echo "set the InfoGenomeR_lib path correctly"
+	exit 1
+fi
+echo "BICseq2_path = ${BICseq2_path}"
+if [[ ${BICseq2_path} == "" ]];then
+        echo "set the InfoGenomeR_lib path"
+        exit 1
+fi
+echo "mode = ${mode}"
+if [[ ${mode} == "" ]];then
+	echo "set the mode; total, germline, or somatic"
+	exit 1
+fi
+echo "lambda_fi   = ${lambda_fi}"
+echo "cancer_type = ${cancer_type}"
+echo "min_ploidy = ${min_ploidy}"
+echo "max_ploidy = ${max_ploidy}"
+
+cn_norm=`readlink -f "$1"`
+echo "cn_norm = $cn_norm"
+if [[ $cn_norm == "" ]] || [[ ! -s $cn_norm ]];then
+        echo "cn_norm directory is required"
+        exit 1
+fi
+echo "cn_norm_germ = ${cn_norm_germ}"
+if [[ $mode == "somatic" ]];then
+	if [[ $cn_norm_germ == "" ]];then
+		echo "cn_norm_germ directory is required";
+		exit 1
+	fi
+        if [[ $germ_LocSeq_result == "" ]];then
+                echo "germ_LocSeq_result is required";
+                exit 1
+        fi
+fi
+echo "out_dir = ${out_dir}"
+
+bin="$cn_norm/"
+normal_bin="$cn_norm_germ/"
+if [[ -s $out_dir ]];then
+	echo "The breakpoint graph exists... simplifying"
+else
+        echo "The output directory of breakpoint graph construction is not found."
+	exit 1
+fi
+cd $out_dir
+SV=SVs
+i=1;
+iter=1;
+library=$InfoGenomeR_lib\/breakpoint_graph
+bicseq=$BICseq2_path\/NBICseq-seg.pl
+
+
+if [ $mode == "somatic" ];then
+	bin="$PWD/cn_norm/"
+	normal_bin="$PWD/cn_norm_germ/"
+fi
+
+iter=`ls -l  | awk '{print $9}'|  grep -P '^iter[1-9][0-9]{0,2}$' | awk 'BEGIN{max=0}{split($1,f,"iter"); if(max<f[2]) max=f[2];}END{print max}'`
+echo $iter > iter$iter.simplified
+cd iter$iter
+        test1=`cat SVs | wc -l`
+        test2=`cat SVs.CN_opt.filtered| wc -l`
+        if [ $test1 -ne $test2 ];then
+                echo "breakpoint_graph is not optimized"
+                exit 1
+        fi
+
+
+Rscript $library/simple_filter.R
+
+SV_l1=`cat complex_SV | wc -l`
+SV_l2=`cat SVs | wc -l`
+if [ $SV_l1 -eq $SV_l2 ];then
+        cd ../
+        exit 1
+fi
+if [ $mode == "somatic" ];then
+        Rscript $library/simple_filter_cn_remove.R $bin $normal_bin
+else
+        Rscript $library/simple_filter_cn_remove_TOTAL.R $bin $normal_bin
+fi
+
+cp complex_SV ../SVs
+
+cd ../
+
+
+bin="$PWD/cn_norm_simple/"
+normal_bin="$PWD/cn_norm_germ_simple/"
+
+
+
+ABSOLUTE_STABLE="F";
+
+iter_start=$iter+1;
+for (( iter=$iter_start; iter<=100; iter++ ))
+do
+	mkdir -p iter$iter;
+	cd iter$iter;
+	cp  ../SVs ./
+	mkdir -p tmp;
+
+	lambda=$lambda_fi
+
+	echo "Local segmentation..."
+
+
+	if [ $mode == "somatic" ];then
+		mkdir -p tmp_tumor;
+		mkdir -p tmp_normal;
+		tmp_folder="$PWD/tmp/"
+		tmp_folder1="$PWD/tmp_tumor/"
+		tmp_folder2="$PWD/tmp_normal/"
+		Rscript $library/SV_local_CN_segment_wgs_raw_somatic.R $SV $i $bin $tmp_folder $bicseq $lambda $bam $normal_bin $tmp_folder1 $tmp_folder2 $normal_bam $chr_prefix
+		rm -rf tmp_tumor;
+		rm -rf tmp_normal;
+	else
+		tmp_folder="$PWD/tmp/"
+		Rscript $library/SV_local_CN_segment_wgs_raw.R $SV $i $bin $tmp_folder $bicseq $lambda $bam $chr_prefix;
+	fi
+	rm -rf tmp;
+
+
+
+	Rscript $library/ABSOLUTE.R "$cancer_type" $sample $min_ploidy $max_ploidy $ABSOLUTE_STABLE
+	if [[ -s ABSOLUTE_output/output/reviewed/$sample.test.ABSOLUTE.table.txt ]];then
+		echo "pass"
+	else
+		ABSOLUTE_STABLE="T";
+	        Rscript $library/ABSOLUTE.R "$cancer_type" $sample $min_ploidy $max_ploidy $ABSOLUTE_STABLE
+	        if [[ -s ABSOLUTE_output/output/reviewed/$sample.test.ABSOLUTE.table.txt ]];then
+			echo "pass"
+		else
+			exit 1
+		fi
+	fi
+        echo "Ploidy and purity estimation is done"
+        echo "Integer programming..."
+	
+	Rscript $library/integer_programming.R $sample "copy_numbers_ABSOLUTE_input.negative_marker" $SV $read_length> IP.log
+	test1=`cat SVs.CN_opt.filtered | wc -l`
+	test2=`cat SVs | wc -l`
+	
+	cp SVs.CN_opt.filtered ../SVs
+	if [[ $test1 -eq $test2 ]];then
+                Rscript $library/simple_filter.R
+		SV_l1=`cat complex_SV | wc -l`
+		SV_l2=`cat SVs | wc -l`
+                if [ $mode == "somatic" ];then
+                        Rscript $library/simple_filter_cn_remove.R $bin $normal_bin
+                else
+                        Rscript $library/simple_filter_cn_remove_TOTAL.R $bin $normal_bin
+                fi
+                if [ $SV_l1 -eq $SV_l2 ];then
+                        exit 1
+                fi
+
+                cp complex_SV ../SVs
+
+	fi
+	cd ../
+
+done

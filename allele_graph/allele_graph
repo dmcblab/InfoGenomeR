@@ -91,7 +91,7 @@ if [[ ! -s ${fasta_prefix}.fa ]] || [[ ! -s ${fasta_prefix}.2bit ]];then
 	echo "write the reference genome prefix and check .2bit exists"
 	exit 1
 fi
-thread=echo $thread | awk '{if($1>23){print 23}else{print $1}}'
+thread=`echo $thread | awk '{if($1>23){print 23}else{print $1}}'`
 echo "thread = ${thread}"
 ref=${fasta_prefix}.fa
 hom=`readlink -f "$1"`
