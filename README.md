@@ -205,7 +205,7 @@ tumor_bam=tumor.bam
 `./preprocessing/het_SNP_detection_somatic.sh`
  
 # Tutorials
-- Download demo files. Demo contains input files for InfoGenomeR. 
+- Download tutorial files. Tutorial files contains input files for InfoGenomeR. 
 - Tutorial 1:Germline and somatic mode (GRCh37). a simiulated cancer genome (haplotype coverage 5X, triploidy, purity 75%) that has 162 somatic SVs (true_SV_sets_somatic). [Tutorial_1](https://zenodo.org/record/5105505/files/tutorial1.tar.xz).
 - Tutorial 2:Somatic mode (GRCh38). a simiulated cancer genome (haplotype coverage 10X, triploidy, purity 75%). [Tutorial_2](https://zenodo.org/record/4545666/files/GRCh38.triploidy.f10.p0.75.tar.xz)
 
@@ -243,7 +243,7 @@ allele_graph -m somatic -s copy_numbers.control hom_snps.format het_snps.format 
 ## haplotype graph construction
 haplotype_graph -o somatic_job -t 6 ## 40GB memory per one thread (total about 256GB). Do not exceed the maximum memory.
 ```
-It takes a few hours during five iterations and outputs SVs, copy numbers and a breakpoint graph at the haplotype level.
+It takes a few hours during four iterations and outputs SVs, copy numbers and a breakpoint graph at the haplotype level.
 
 - Check performance for SV calls from InfoGenomeR.
 ```
