@@ -254,7 +254,7 @@ precision:0.955224 recall:0.805031 fmeasure: 0.873720
 
 # Tutorial 2 (GRCh38)
 ```
-wget://zenodo.org/record/4545666/files/GRCh38.triploidy.f10.p0.75.tar.xz
+wget https://zenodo.org/record/4545666/files/GRCh38.triploidy.f10.p0.75.tar.xz
 tar Jxvf GRCh38.triploidy.f10.p0.75.tar.xz
 cd GRCh38.triploidy.f10.p0.75 
 cp $InfoGenomeR_lib/etc/SV_performance.R ./
