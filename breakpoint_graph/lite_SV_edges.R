@@ -6,7 +6,7 @@ sv=read.table(args[1],stringsAsFactors=F)
 
 t=t[t[,5]==0,];
 raw_sv=read.table(args[2],stringsAsFactors=F);
-one_side= if (args[3]=="T") T else F
+one_side= if (args[4]=="T") T else F
 
 raw_sv$ori1=NA;
 raw_sv$ori2=NA;

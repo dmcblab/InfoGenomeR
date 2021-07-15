@@ -11,8 +11,7 @@ my $search_length = $ARGV[2];
 #`samtools view -f 1 -F 3840 NPE_mapping_to_ref_sorted.bam > NPE_mapping_to_ref_sorted_paired_primary.sam`;
 #`mkdir edge_filling_reads`;
 #`perl  sam_To_bed_ori_sr_sub.pl > edge_filling_sorted_paired_primary.sam.info`;
-`rm -r edge_filling_reads_recal`;
-`mkdir edge_filling_reads_recal`;
+`mkdir -p edge_filling_reads_recal`;
 
 my @unsatisfied;
 

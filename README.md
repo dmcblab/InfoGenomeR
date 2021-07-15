@@ -9,7 +9,7 @@
 </p>
 
 # Requirements
-- Executables in your PATH (InfoGenomeR/ext)
+- Executables in your PATH
     - bwa (version 0.7.15)
     - samtools (version 1.3)
     - bedtools (version 1.3)
@@ -22,15 +22,43 @@
     - plyr (version 1.8.4)
 - BIC-seq2 (version 0.7.2)
 # Environment settings
-- download haplotype DAGs, and bwa-indexed reference genome if it doesn't exist (GRCh37 or GRCh38) (to be uploaded in Zenodo).
+- download InfoGenomeR and BIC-seq2 in your working directory. 
+```
+## For example, the working directory is /home/dmcblab.
+cd /home/dmcblab
 
+#### Download InfoGenomeR
+git clone https://github.com/dmcblab/InfoGenomeR.git
+
+#### Download BIC-seq2
+wget http://compbio.med.harvard.edu/BIC-seq/NBICseq-seg_v0.7.2.tar.gz
+tar -xvf NBICseq-seg_v0.7.2.tar.gz
+
+```
+- download haplotype DAGs, and bwa-indexed reference genome if it doesn't exist (GRCh37 or GRCh38).
+```
+## GRCh37
+wget https://zenodo.org/record/5105505/files/GRCh37.tar.xz
+tar Jxvf GRCh37.tar.xz
+wget https://zenodo.org/record/5105505/files/haplotype_1000G.tar.xz
+tar Jxvf haplotype_1000G.tar.xz
+
+## GRCh38
+wget https://zenodo.org/record/5105505/files/GRCh38.tar.xz
+tar Jxvf GRCh38.tar.xz
+wget https://zenodo.org/record/5105505/files/haplotype_1000G_GRCh38.tar.xz?download=1
+tar Jxvf haplotype_1000G_GRCh38.tar.xz
+```
 - set the BIC-seq2 path, InfoGenomeR_lib, and Haplotype path.
 ```
-export BICseq2_path=/home/you/NBICseq-seg_v0.7.2
-export InfoGenomeR_lib=/home/you/InfoGenomeR
-export Haplotype_path=/home/you/haplotype_1000G ## for GRCh37. If GRCh38 was used, export Haplotype_path=/home/you/haplotype_1000G_38
+export BICseq2_path=/home/dmcblab/NBICseq-seg_v0.7.2
+export InfoGenomeR_lib=/home/dmcblab/InfoGenomeR
+export Haplotype_path=/home/dmcblab/haplotype_1000G ## for GRCh37. If GRCh38 was used, export Haplotype_path=/home/dmcblab/haplotype_1000G_38
 ```
-
+- set executables (bwa, samtools ...) in your PATH. You may use precompiled binaries in the InfoGenomeR/ext folder if they work in your computer. Otherwise, please install them.
+```
+export PATH=$InfoGenomeR_lib/ext:$PATH
+```
 - set the PATH environment.
 ```
 export PATH=$InfoGenomeR_lib/breakpoint_graph:$InfoGenomeR_lib/allele_graph:$InfoGenomeR_lib/haplotype_graph:$PATH
@@ -46,6 +74,8 @@ export PATH=$InfoGenomeR_lib/breakpoint_graph:$InfoGenomeR_lib/allele_graph:$Inf
 
 # Outputs
 - Haplotype-resolved SVs and CNAs (SVs.CN_opt.phased, copy_number.CN_opt.phased)
+- Haplotypes (haplotype)
+- Purity and ploidy (purity_ploidy)
 - Haplotype graph (node_keys, edge_information.txt)
 - Karyotypes (Eulerian_path.0)
 - SV cluster and topology (cluster_sv)
@@ -178,41 +208,40 @@ tumor_bam=tumor.bam
  
 # Tutorials
 - Download demo files. Demo contains input files for InfoGenomeR. 
-- Tutorial 1: a simiulated cancer genome (haplotype coverage 5X, triploidy, purity 75%) that has 162 somatic SVs (true_SV_sets_somatic). [Demo 1](http://www.gcancer.org/InfoGenomeR/demo1.tar.gz).
-- Tutorial 2: A549 cancer cell line that is triploidy with der(11)t(8;11) and der(19)t(8;19)x2. It has chromothripsis on chromosome 15. [Demo 2](http://www.gcancer.org/InfoGenomeR/demo2.tar.gz).
-From initial 4054 SV calls, InfoGenomeR reconstructs der(11)t(8;11) and der(19)t(8;19)x2.
+- Tutorial 1:Germline and somatic mode (GRCh37). a simiulated cancer genome (haplotype coverage 5X, triploidy, purity 75%) that has 162 somatic SVs (true_SV_sets_somatic). [Tutorial_1](https://zenodo.org/record/5105505/files/tutorial1.tar.xz).
+- Tutorial 2:Somatic mode (GRCh38). a simiulated cancer genome (haplotype coverage 10X, triploidy, purity 75%). [Tutorial_2](https://zenodo.org/record/4545666/files/GRCh38.triploidy.f10.p0.75.tar.xz)
 
-# Tutorial 1
+# Tutorial 1 (GRCh37)
 ```
-wget http://www.gcancer.org/InfoGenomeR/demo1.tar.gz
-tar -xvf demo1.tar.gz
-cd demo1
+wget https://zenodo.org/record/5105505/files/tutorial1.tar.xz
+tar Jxvf tutorial1.tar.xz
+cd tutorial1
 cp $InfoGenomeR_lib/etc/SV_performance.R ./
 ```
 - Check baselines for SVs.
 ```
 ## delly
 Rscript SV_performance.R delly.format true_SV_sets_somatic
-precision: 0.6902174 recall: 0.7987421 fmeasure: 0.7405248
+precision:0.690217 recall:0.798742 fmeasure: 0.740525
 ## manta
 Rscript SV_performance.R manta.format true_SV_sets_somatic
-precision: 0.9495798 recall: 0.7106918 fmeasure: 0.8129496
+precision:0.949580 recall:0.710692 fmeasure: 0.812950
 ## novobreak
 Rscript SV_performance.R novobreak.format true_SV_sets_somatic
-precision: 0.9021739 recall: 0.4968553 fmeasure: 0.6408014
+precision:0.902174 recall:0.496855 fmeasure: 0.640801
 ```
 - Running InfoGenomeR.
 ```
 ## Generate a germline copy number profile
-breakpoint_graph -m germline germline_delly.format -o germline_job cn_norm_germ
+breakpoint_graph -m germline germline_delly.format -o germline_job cp_norm_germ
 cp germline_job/copy_numbers ./copy_numbers.control
 
 ## Merge SV calls.
 cat delly.format manta.format novobreak.format > SVs
 ## breakpoint graph construction
-breakpoint_graph -m somatic -d ./ SVs ./cn_norm -g /home/you/GRCh37 -c cn_norm_germ -s copy_numbers.control -o somatic_job
+breakpoint_graph -m somatic -d ./ SVs ./cp_norm -g /home/dmcblab/GRCh37/GRCh37 -c cp_norm_germ -s copy_numbers.control -o somatic_job
 ## allele graph construction
-allele_graph -m somatic -s copy_numbers.control hom_snps.format het_snps.format -o somatic_job -g /home/you/GRCh37 -t 23
+allele_graph -m somatic -s copy_numbers.control hom_snps.format het_snps.format -o somatic_job -g /home/dmcblab/GRCh37/GRCh37 -t 23
 ## haplotype graph construction
 haplotype_graph -o somatic_job -t 6 ## 40GB memory per one thread.
 ```
@@ -220,30 +249,34 @@ It takes a few hours during five iterations and outputs SVs, copy numbers and a 
 
 - Check performance for SV calls from InfoGenomeR.
 ```
-Rscript SV_performance.R somatic_job/SVs.AS_SV.haplotype_phased true_SV_sets_somatic
-precision:0.955556 recall:0.811321 fmeasure: 0.877551
+## The output directory is InfoGenomeR_output
+Rscript SV_performance.R somatic_job/InfoGenomeR_output/SVs.CN_opt.phased true_SV_sets_somatic
+precision:0.955224 recall:0.805031 fmeasure: 0.873720
 ```
-# Tutorial 2 (Old, to be updated)
-- Run scripts for breakpoint graph construction.\
-`./breakpoint_graph/breakpoint_graph.sh total A549 LUSC 2 4 bicseq_norm bicseq_norm_germ null hg19 5 null null 0`\
-`./breakpoint_graph/breakpoint_graph_simplifying.sh total A549 LUSC 2 4 bicseq_norm bicseq_norm_germ null hg19 5 null null 0`\
-`./allele_graph/allele_graph.sh total null hom_snps.format het_snps.format hg19.fa`\
-`./haplotype_graph/haplotype_graph.sh`\
-It takes a day during 25 iterations (maximum 24 threads and 256Gb memory).
-- Run the script for plotting the haplotype graph.\
-`Rscript ACN_GRAPH.R 3,8,11,15,19`
-<p align="center">
-    <img height="300" src="https://github.com/YeonghunL/InfoGenomeR/blob/master/doc/haplotype_graph.png">
-  </a>
-</p>
 
-- Enter a directory for a subset of chromosomes, run the Eulerian path finding script, and run the plotting script for the candidate karyotype.\
-`cd euler.15.19`\
-`./DAG.sh F`\
-`Rscript KAR_GRAPH.R`
+# Tutorial 2 (GRCh38)
+```
+wget://zenodo.org/record/4545666/files/GRCh38.triploidy.f10.p0.75.tar.xz
+tar Jxvf GRCh38.triploidy.f10.p0.75.tar.xz
+cd GRCh38.triploidy.f10.p0.75 
+cp $InfoGenomeR_lib/etc/SV_performance.R ./
+### Change the environment to GRCh38.
+export Haplotype_path=/home/dmcblab/haplotype_1000G_GRCh38
+```
+- Running InfoGenomeR.
+```
+## Merge SV calls.
+cat delly.format manta.format novobreak.format > SVs
+## breakpoint graph construction
+breakpoint_graph -m somatic -d ./ SVs ./cp_norm -g /home/dmcblab/GRCh38/GRCh38 -c cp_norm_germ -s copy_numbers.control -o somatic_job
+## allele graph construction
+allele_graph -m somatic -s copy_numbers.control hom_snps.format het_snps.format -o somatic_job -g /home/dmcblab/GRCh38/GRCh38 -t 23
+## haplotype graph construction
+haplotype_graph -o somatic_job -t 6 ## 40GB memory per one thread.
+```
+- Check performance for SV calls from InfoGenomeR.
+```
+## The output directory is InfoGenomeR_output
+Rscript SV_performance.R somatic_job/InfoGenomeR_output/SVs.CN_opt.phased true_SV_sets_somatic
 
-<p align="center">
-    <img height="150" src="https://github.com/YeonghunL/InfoGenomeR/blob/master/doc/karyotype.png">
-  </a>
-</p>
-
+```
