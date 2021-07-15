@@ -18,7 +18,7 @@ while [[ $# -gt 0 ]]; do
       ;;
     -h|--help)
       echo -e "Usage: haplotype_graph [options]\n"
-      echo -e "\t-o, --allele_graph_dir \n \t\t The output directory of allele graph construciton
+      echo -e "\t-o, --allele_graph_dir \n \t\t The output directory of allele graph construction
 \t-t, --threads \n \t\t The number of threads
 \t-h, --help\n
 "

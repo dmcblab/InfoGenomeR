@@ -41,7 +41,7 @@ while [[ $# -gt 0 ]]; do
       echo -e  "\t-m, --mode (required)\n \t\t Select the mode (germline, total, somatic)
 \t-s, --germ_LocSeq_result (required for somatic mode) \n \t\t Local segmentation results from a control genome.
 \t-g, --ref_genome (required for NP reads mapping) \n \t\t Fasta prefix (hg19 or hg38). Enter the prefix without .2bit and .fa extension.
-\t-o, --breakpoint_graph_dir \n \t\t The output directory of breakpoint graph construciton
+\t-o, --breakpoint_graph_dir \n \t\t The output directory of breakpoint graph construction
 \t-t, --threads \n \t\t The number of threads
 \t-h, --help\n
 "
