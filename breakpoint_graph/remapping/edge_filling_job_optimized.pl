@@ -18,8 +18,7 @@ my $chr_prefix = $ARGV[7];
 `samtools sort -n NPE_mapping_to_ref.bam > NPE_mapping_to_ref_sorted.bam`;
 `samtools view -f 1 -F 3840 NPE_mapping_to_ref_sorted.bam > NPE_mapping_to_ref_sorted_paired_primary.sam`;
 `perl  $library/remapping/sam_To_bed_ori_sr_sub.pl $fasta $CIGAR $read_length $search_length > edge_filling_sorted_paired_primary.sam.info`;
-`rm -r edge_filling_reads`;
-`mkdir edge_filling_reads`;
+`mkdir -p edge_filling_reads`;
 
 my @unsatisfied;
 
