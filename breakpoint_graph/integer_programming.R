@@ -13,6 +13,7 @@ min_expected_modal_cn_diff=0.3;
 #ABSOLUTE_copy_ratio_limit=2.5;
 static_CN_limit=Inf;
 read_length=args[4];
+false_filtering=args[5];
 marker_sparsity=0;
 #0#ABSOLUTE_CN_limit=Inf; ####################### nearest regression is performed
 modal_cn_delta=1;
@@ -1210,7 +1211,7 @@ while(nrow(SV_set)!=0){
 
 #############################################
 	for(A_SV_i in 1:nrow(A_SV)){
-		if(false_SVs[A_SV_i]==1){
+		if(false_filtering=="T" && false_SVs[A_SV_i]==1){
        ##         if(0){
 			A_SV[A_SV_i,15]=0;
 		}else{

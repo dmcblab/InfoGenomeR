@@ -12,7 +12,7 @@ npe_dir=null
 fasta_prefix="hg19"
 out_dir=InfoGenomeR_job
 chr_prefix=0  # The reference genome has "chr" prefix or not
-
+sensitive="T"
 bam=null
 normal_bam=null
 POSITIONAL=()
@@ -77,6 +77,11 @@ while [[ $# -gt 0 ]]; do
     -v|--version)
       echo "v.1.0.1"
       exit 1
+      ;;
+    --sensitive)
+      sensitive="F"
+      shift
+      shift
       ;;
     -h|--help)
       echo -e "Usage: breakpoint_graph <SVs> <cn_norm> [options]\n"
@@ -225,6 +230,7 @@ if [[ $mode != "simplification" ]];then
 	Rscript $library/SV_break_adjustment.R
 	$library/SV_truncated_wgs SVs $bin
 else
+	echo "itr.log" > itr.log
 	sv_lines=`cat SVs | wc -l`
 	new_sv_lines=0;
 	while [[ $sv_lines -ne $new_sv_lines ]];do
@@ -238,10 +244,11 @@ else
 
 
 	iter=`ls -l  | awk '{print $9}'|  grep -P '^iter[1-9][0-9]{0,2}$' | awk 'BEGIN{max=0}{split($1,f,"iter"); if(max<f[2]) max=f[2];}END{print max}'`
-	min_simplifying_iter=`ls -l  | awk '{print $9}'|  grep -P '^iter[1-9][0-9]{0,2}.block_clusters$' |  awk 'BEGIN{min=999}{split($1,f,"iter"); split(f[2],g,".block_clusters"); if(min>g[1]) min=g[1];}END{print min}'`
+	min_simplifying_iter=`cat itr.log |  grep -P '^iter[1-9][0-9]{0,2}.block_clusters$' |  awk 'BEGIN{min=999}{split($1,f,"iter"); split(f[2],g,".block_clusters"); if(min>g[1]) min=g[1];}END{print min}'`
 	cd iter$iter;
 		Rscript $library/TO_bpgraph_hidden_node_for_connectivity.R
 		Rscript $library/lite_SV_edges.R ../iter$min_simplifying_iter\/SVs ../iter1/SVs $search_length F
+#		$library/SV_truncated_wgs SVs.added $bin
 		cp SVs.added ../SVs
 	cd ../
 
@@ -306,7 +313,7 @@ do
 	echo "Ploidy and purity estimation is done"
 	echo "Integer programming..."
 	
-	Rscript $library/integer_programming.R $sample "copy_numbers_ABSOLUTE_input.negative_marker" $SV $read_length > IP.log
+	Rscript $library/integer_programming.R $sample "copy_numbers_ABSOLUTE_input.negative_marker" $SV $read_length $sensitive > IP.log
 	test1=`cat SVs.CN_opt.filtered | wc -l`
 	test2=`cat SVs | wc -l`
 	
