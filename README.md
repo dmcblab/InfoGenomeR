@@ -44,7 +44,7 @@ tar Jxvf haplotype_1000G.tar.xz
 ## GRCh38
 wget https://zenodo.org/record/5105505/files/GRCh38.tar.xz
 tar Jxvf GRCh38.tar.xz
-wget https://zenodo.org/record/5105505/files/haplotype_1000G_GRCh38.tar.xz?download=1
+wget https://zenodo.org/record/5105505/files/haplotype_1000G_GRCh38.tar.xz
 tar Jxvf haplotype_1000G_GRCh38.tar.xz
 ```
 - set the BIC-seq2 path, InfoGenomeR_lib, and Haplotype path.
@@ -120,7 +120,7 @@ Options:
         -g, --ref_genome (required for NP reads mapping)
                  Fasta prefix (hg19 or hg38). Enter the prefix without .2bit and .fa extension.
         -o, --breakpoint_graph_dir
-                 The output directory of breakpoint graph construciton
+                 The output directory of breakpoint graph construction
         -t, --threads
                  The number of threads
         -h, --help
@@ -130,7 +130,7 @@ Options:
 Usage: haplotype_graph [options]
 
         -o, --allele_graph_dir
-                 The output directory of allele graph construciton
+                 The output directory of allele graph construction
         -t, --threads
                  The number of threads
         -h, --help
@@ -241,7 +241,7 @@ breakpoint_graph -m somatic -d ./ SVs ./cp_norm -g /home/dmcblab/GRCh37/GRCh37 -
 ## allele graph construction
 allele_graph -m somatic -s copy_numbers.control hom_snps.format het_snps.format -o somatic_job -g /home/dmcblab/GRCh37/GRCh37 -t 23
 ## haplotype graph construction
-haplotype_graph -o somatic_job -t 6 ## 40GB memory per one thread.
+haplotype_graph -o somatic_job -t 6 ## 40GB memory per one thread (total about 256GB). Do not exceed the maximum memory.
 ```
 It takes a few hours during five iterations and outputs SVs, copy numbers and a breakpoint graph at the haplotype level.
 
@@ -261,6 +261,15 @@ cp $InfoGenomeR_lib/etc/SV_performance.R ./
 ### Change the environment to GRCh38.
 export Haplotype_path=/home/dmcblab/haplotype_1000G_GRCh38
 ```
+- Check baselines for SVs.
+```
+Rscript SV_performance.R delly.format ./simulated_genome/true_SV_sets_somatic_dup_checked.refcoor
+precision:0.869110 recall:0.775701 fmeasure: 0.819753
+Rscript SV_performance.R manta.format ./simulated_genome/true_SV_sets_somatic_dup_checked.refcoor
+precision:0.935897 recall:0.738318 fmeasure: 0.825449
+Rscript SV_performance.R novobreak.format ./simulated_genome/true_SV_sets_somatic_dup_checked.refcoor
+precision:0.937500 recall:0.532710 fmeasure: 0.679380
+```
 - Running InfoGenomeR.
 ```
 ## Merge SV calls.
@@ -270,11 +279,11 @@ breakpoint_graph -m somatic -d ./ SVs ./cp_norm -g /home/dmcblab/GRCh38/GRCh38 -
 ## allele graph construction
 allele_graph -m somatic -s copy_numbers.control hom_snps.format het_snps.format -o somatic_job -g /home/dmcblab/GRCh38/GRCh38 -t 23
 ## haplotype graph construction
-haplotype_graph -o somatic_job -t 6 ## 40GB memory per one thread.
+haplotype_graph -o somatic_job -t 6 ## 40GB memory per one thread ( total about 256GB). Do not exceed the maximum memory.
 ```
 - Check performance for SV calls from InfoGenomeR.
 ```
 ## The output directory is InfoGenomeR_output
-Rscript SV_performance.R somatic_job/InfoGenomeR_output/SVs.CN_opt.phased true_SV_sets_somatic
-
+Rscript SV_performance.R somatic_job/InfoGenomeR_output/SVs.CN_opt.phased ./simulated_genome/true_SV_sets_somatic_dup_checked.refcoor
+precision:0.971910 recall:0.808411 fmeasure: 0.882653
 ```
