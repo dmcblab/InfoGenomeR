@@ -5,11 +5,11 @@ max_ploidy=5
 sample=sample1
 cancer_type=null
 out_dir=InfoGenomeR_job
+cyto=${InfoGenomeR_lib}/humandb/${Ref_version}_cytoBand.txt
 chr_prefix=0  # The reference genome has "chr" prefix or not
 read_length=100
 bam=null
 normal_bam=null
-cyto=${InfoGenomeR_lib}/humandb/hg19_cytoBand.txt
 POSITIONAL=()
 while [[ $# -gt 0 ]]; do
   key="$1"

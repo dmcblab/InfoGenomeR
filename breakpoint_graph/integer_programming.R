@@ -1,4 +1,5 @@
 args <- commandArgs(TRUE)
+library("data.table")
 library(lpSolveAPI)
 ####
 #args=c();
@@ -6,9 +7,9 @@ library(lpSolveAPI)
 #marker_size=2;
 marker_size=0;
 false_marker_size=1;
-min_segment_length=500; #stability
+min_segment_length=50; 
 ABSOLUTE_subclonal_ccf_ci95_high=0.8;
-min_expected_modal_cn_diff=0.3;
+min_expected_modal_cn_diff=0.35;
 #ABSOLUTE_CN_limit=14;
 #ABSOLUTE_copy_ratio_limit=2.5;
 static_CN_limit=Inf;
@@ -28,7 +29,7 @@ max_SV_min=5000;
 time_out=240;
 SV_max=200; ######## upper bound of a single SV
 CN_max=200; ####### for initial relaxed  problem
-seg.q.tab.threshold=0.8 #stability
+seg.q.tab.threshold=0.95
 ####
 load(paste("ABSOLUTE_output/",args[1],".ABSOLUTE.RData",sep=""));
 ABS_purity_ploidy=read.table(paste("ABSOLUTE_output/output/reviewed/",args[1],".test.ABSOLUTE.table.txt",sep=""), header=T,sep="\t");
@@ -73,10 +74,33 @@ for(i in 1:nrow(new)){
 new$alternative_modal_cn=new$modal_cn;
 #new$Probes=new$n_probes;
 
+r=fread(paste(Sys.getenv("InfoGenomeR_lib"),"/humandb/",Sys.getenv("Ref_version"),".repeatmasker",sep=""))
+r[r$genoName=="X","genoName"]=23
+setkey(r,genoName,genoStart,genoEnd)
+unmappable=function(ni){
+	i1=which(r$genoName==new[ni,"Chromosome"] &  r$genoEnd<new[ni,"Start.bp"])
+	i2=which(r$genoName==new[ni,"Chromosome"] &  r$genoStart>new[ni,"End.bp"])
+	if(length(i1)!=0 & length(i2)!=0){
+		i1=max(i1)
+		i2=min(i2)		
+		if(i1<=i2){
+				tmp=r[i1:i2,]
+				tmp[1,"genoStart"]=new[ni,"Start.bp"]
+				tmp[nrow(tmp),"genoEnd"]=new[ni,"End.bp"]
+				repeat_per=sum(tmp$genoEnd-tmp$genoStart)/(new[ni,"End.bp"]-new[ni,"Start.bp"])
+				if(repeat_per > 0.9){
+					return (TRUE)
+				}
+		}
+	}
+	return(FALSE)
+}
+
 
 for(i in 1:nrow(new)){
 #        if(is.na(new$modal_cn[i]) || new$End.bp[i]-new$Start.bp[i] < min_segment_length || new$Probes[i]<=0){
-        if(is.na(new$Segment_Mean[i]) || new$End.bp[i]-new$Start.bp[i] < min_segment_length || new$Probes[i]<=0){
+#        if(is.na(new$Segment_Mean[i]) || new$End.bp[i]-new$Start.bp[i] < min_segment_length || new$Probes[i]<=0){
+	if(is.na(new$Segment_Mean[i]) || new$End.bp[i]-new$Start.bp[i] < min_segment_length ||(new$End.bp[i]-new$Start.bp[i] <1000 && unmappable(i)) ||new$Probes[i]<=5){
 
                 new$modal_cn[i]=NA;
                 new[i,"expected_cn"]=Inf;
@@ -1239,6 +1263,7 @@ write.table(SV_table, paste(args[3],".CN_opt",sep=""), quote=F, row.names=F, col
 write.table(SV_table_filtered, paste(args[3],".CN_opt.filtered",sep=""), quote=F, row.names=F, col.names=F,sep="\t")
 
 options(scipen = 999)
+new[is.na(new$modal_cn),"modal_cn"]=round(new$raw_expected_cn[is.na(new$modal_cn)])
 write.table(new, "copy_numbers.CN_opt", quote=F, row.names=F, sep="\t")
 
 ############################
