@@ -9,10 +9,10 @@ max_ploidy=5
 sample=sample1
 cancer_type=null
 npe_dir=null
-fasta_prefix="hg19"
+fasta_prefix=""
 out_dir=InfoGenomeR_job
 chr_prefix=0  # The reference genome has "chr" prefix or not
-sensitive="T"
+stringent="F"
 bam=null
 normal_bam=null
 POSITIONAL=()
@@ -76,10 +76,12 @@ while [[ $# -gt 0 ]]; do
       ;;
     -v|--version)
       echo "v.1.0.1"
+      shift
+      shift
       exit 1
       ;;
-    --sensitive)
-      sensitive="F"
+    --stringent)
+      stringent="T"
       shift
       shift
       ;;
@@ -96,6 +98,7 @@ while [[ $# -gt 0 ]]; do
 \t-g, --ref_genome (required for NP reads mapping) \n \t\t Fasta prefix (hg19 or hg38). Enter the prefix without .2bit and .fa extension.
 \t-c, cn_norm_germ (required for somatic mode) \n \t\t Directory that contains copy number bins from a control genome.
 \t-s, --germ_LocSeq_result (required for somatic mode) \n \t\t Local segmentation results from a control genome.
+\t--stringent \n \t\t stringent condition for low-confidence regions (default: F). turn off if the graph simplification will be applied.
 \t-o, --out_dir \n \t\t If it already exists, results are overlaid (default: InfoGenomeR_job)
 \t-h, --help\n
 "
@@ -116,6 +119,18 @@ if [[ ! -s ${InfoGenomeR_lib}/breakpoint_graph ]];then
 	echo "set the InfoGenomeR_lib path correctly"
 	exit 1
 fi
+echo "$Ref_version=${Ref_version}"
+if [[ $Ref_version == "" ]];then
+        echo "set the Ref_version (GRCh37 or GRCh38)"
+        exit 1
+fi
+cyto=${InfoGenomeR_lib}/humandb/${Ref_version}_cytoBand.txt
+echo "cyto=${InfoGenomeR_lib}/humandb/${Ref_version}_cytoBand.txt"
+if [[ ! -s $cyto ]];then
+	echo "Check cytoband"
+	exit 1
+fi
+
 echo "BICseq2_path = ${BICseq2_path}"
 if [[ ${BICseq2_path} == "" ]];then
         echo "set the InfoGenomeR_lib path"
@@ -160,7 +175,7 @@ if [[ $2 == "" ]] || [[ ! -s $cn_norm ]];then
 fi
 echo "cn_norm_germ = ${cn_norm_germ}"
 echo "germ_LocSeq_result = ${germ_LocSeq_result}"
-
+echo "stringent = ${stringent}"
 
 if [[ $mode == "somatic" ]];then
 	if [[ $cn_norm_germ == "" ]];then
@@ -218,16 +233,29 @@ if [ $mode == "somatic" ];then
 		Rscript $library/germ_cnv_filter_v2.R $germ_LocSeq_result $normal_bin $bin $chr
 		echo "$chr.bin"
 	done
-	
 	bin="$PWD/cn_norm/"
 	normal_bin="$PWD/cn_norm_germ/"
 fi
+
+if [ $mode == "somatic" ];then
+	Rscript $library/bin_blacklist.R $bin cn_norm ${InfoGenomeR_lib}/humandb/${Ref_version}_Excludable.bed
+	Rscript $library/bin_blacklist.R $normal_bin cn_norm_germ ${InfoGenomeR_lib}/humandb/${Ref_version}_Excludable.bed
+else
+	mkdir -p cn_norm
+	Rscript $library/bin_blacklist.R $bin cn_norm ${InfoGenomeR_lib}/humandb/${Ref_version}_Excludable.bed
+fi
+
+
+bin="$PWD/cn_norm/"
+normal_bin="$PWD/cn_norm_germ/"
+
 
 
 ROUND=1
 iter_start=1
 if [[ $mode != "simplification" ]];then
 	Rscript $library/SV_break_adjustment.R
+	Rscript $library/SV_blacklist.R SVs ${InfoGenomeR_lib}/humandb/${Ref_version}_Excludable.bed
 	$library/SV_truncated_wgs SVs $bin
 else
 	echo "itr.log" > itr.log
@@ -247,7 +275,7 @@ else
 	min_simplifying_iter=`cat itr.log |  grep -P '^iter[1-9][0-9]{0,2}.block_clusters$' |  awk 'BEGIN{min=999}{split($1,f,"iter"); split(f[2],g,".block_clusters"); if(min>g[1]) min=g[1];}END{print min}'`
 	cd iter$iter;
 		Rscript $library/TO_bpgraph_hidden_node_for_connectivity.R
-		Rscript $library/lite_SV_edges.R ../iter$min_simplifying_iter\/SVs ../iter1/SVs $search_length F
+		Rscript $library/lite_SV_edges.R ../iter$min_simplifying_iter\/SVs ../iter1/SVs $search_length T
 #		$library/SV_truncated_wgs SVs.added $bin
 		cp SVs.added ../SVs
 	cd ../
@@ -313,7 +341,7 @@ do
 	echo "Ploidy and purity estimation is done"
 	echo "Integer programming..."
 	
-	Rscript $library/integer_programming.R $sample "copy_numbers_ABSOLUTE_input.negative_marker" $SV $read_length $sensitive > IP.log
+	Rscript $library/integer_programming.R $sample "copy_numbers_ABSOLUTE_input.negative_marker" $SV $read_length $stringent > IP.log
 	test1=`cat SVs.CN_opt.filtered | wc -l`
 	test2=`cat SVs | wc -l`
 	

@@ -24,16 +24,23 @@
 ```
 ## For example, the working directory is /home/dmcblab.
 cd /home/dmcblab
-
 #### Download InfoGenomeR
 git clone https://github.com/dmcblab/InfoGenomeR.git
-
 #### Download BIC-seq2
 wget http://compbio.med.harvard.edu/BIC-seq/NBICseq-seg_v0.7.2.tar.gz
 tar -xvf NBICseq-seg_v0.7.2.tar.gz
-
 ```
-- download haplotype DAGs, and bwa-indexed reference genome if it doesn't exist (GRCh37 or GRCh38).
+- download repeatmasker files.
+```
+#### Get repeatmastker files
+cd InfoGenomeR/humandb
+wget https://zenodo.org/record/5112761/files/GRCh37.repeatmasker.xz
+xz -d GRCh37.repeatmasker.xz
+wget https://zenodo.org/record/5112761/files/GRCh38.repeatmasker.xz
+xz -d GRCh38.repeatmasker.xz
+cd ../../
+```
+- download haplotype DAGs and bwa-indexed reference genome (GRCh37 or GRCh38).
 ```
 ## GRCh37
 wget https://zenodo.org/record/5105505/files/GRCh37.tar.xz
@@ -52,6 +59,7 @@ tar Jxvf haplotype_1000G_GRCh38.tar.xz
 export BICseq2_path=/home/dmcblab/NBICseq-seg_v0.7.2
 export InfoGenomeR_lib=/home/dmcblab/InfoGenomeR
 export Haplotype_path=/home/dmcblab/haplotype_1000G ## for GRCh37. If GRCh38 was used, export Haplotype_path=/home/dmcblab/haplotype_1000G_38
+export Ref_version=GRCh37 ## for GRCh37. export Ref_version=GRCh38 for GRCh38.
 ```
 - set executables (bwa, samtools ...) in your PATH. You may use precompiled binaries in the InfoGenomeR/ext folder if they work in your computer. Otherwise, please install them.
 ```
@@ -104,6 +112,8 @@ Options:
                  Directory that contains copy number bins from a control genome.
         -s, --germ_LocSeq_result (required for somatic mode)
                  Local segmentation results from a control genome.
+        --stringent
+                 stringent condition for low-confidence regions (default: F). turn off if the graph simplification will be applied.
         -o, --out_dir
                  If it already exists, results are overlaid (default: InfoGenomeR_job)
         -h, --help
@@ -237,13 +247,13 @@ cp germline_job/copy_numbers ./copy_numbers.control
 ## Merge SV calls.
 cat delly.format manta.format novobreak.format > SVs
 ## breakpoint graph construction
-breakpoint_graph -m somatic -d ./ SVs ./cp_norm -g /home/dmcblab/GRCh37/GRCh37 -c cp_norm_germ -s copy_numbers.control -o somatic_job
+breakpoint_graph --stringent -m somatic -d ./ SVs ./cp_norm -g /home/dmcblab/GRCh37/GRCh37 -c cp_norm_germ -s copy_numbers.control -o somatic_job
 ## allele graph construction
 allele_graph -m somatic -s copy_numbers.control hom_snps.format het_snps.format -o somatic_job -g /home/dmcblab/GRCh37/GRCh37 -t 23
 ## haplotype graph construction
 haplotype_graph -o somatic_job -t 6 ## 40GB memory per one thread (total about 256GB). Do not exceed the maximum memory.
 ```
-It takes a few hours during four iterations and outputs SVs, copy numbers and a breakpoint graph at the haplotype level.
+It takes a few hours during three iterations and outputs SVs, copy numbers and a breakpoint graph at the haplotype level.
 
 - Check performance for SV calls from InfoGenomeR.
 ```
@@ -260,6 +270,7 @@ cd GRCh38.triploidy.f10.p0.75
 cp $InfoGenomeR_lib/etc/SV_performance.R ./
 ### Change the environment to GRCh38.
 export Haplotype_path=/home/dmcblab/haplotype_1000G_GRCh38
+export Ref_version=GRCh38
 ```
 - Check baselines for SVs.
 ```
@@ -275,7 +286,7 @@ precision:0.937500 recall:0.532710 fmeasure: 0.679380
 ## Merge SV calls.
 cat delly.format manta.format novobreak.format > SVs
 ## breakpoint graph construction
-breakpoint_graph -m somatic -d ./ SVs ./cp_norm -g /home/dmcblab/GRCh38/GRCh38 -c cp_norm_germ -s copy_numbers.control -o somatic_job
+breakpoint_graph --stringent -m somatic -d ./ SVs ./cp_norm -g /home/dmcblab/GRCh38/GRCh38 -c cp_norm_germ -s copy_numbers.control -o somatic_job
 ## allele graph construction
 allele_graph -m somatic -s copy_numbers.control hom_snps.format het_snps.format -o somatic_job -g /home/dmcblab/GRCh38/GRCh38 -t 23
 ## haplotype graph construction
