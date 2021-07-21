@@ -9,6 +9,7 @@ cyto=${InfoGenomeR_lib}/humandb/${Ref_version}_cytoBand.txt
 chr_prefix=0  # The reference genome has "chr" prefix or not
 read_length=100
 bam=null
+stringent="F"
 normal_bam=null
 POSITIONAL=()
 while [[ $# -gt 0 ]]; do
@@ -46,6 +47,11 @@ while [[ $# -gt 0 ]]; do
       ;;
     -o|--out_dir)
       out_dir=`readlink -f "$2"`
+      shift
+      shift
+      ;;
+    --stringent)
+      stringent="T"
       shift
       shift
       ;;
@@ -137,7 +143,7 @@ normal_bin="$PWD/cn_norm_germ_simple/"
 
 iter=`ls -l  | awk '{print $9}'|  grep -P '^iter[1-9][0-9]{0,2}$' | awk 'BEGIN{max=0}{split($1,f,"iter"); if(max<f[2]) max=f[2];}END{print max}'`
 
-echo -e" iter$iter.block_clusters" >> itr.log
+echo -e "iter$iter.block_clusters" >> itr.log
 cd iter$iter
 
 if [ -s "cluster_sv" ];then
@@ -215,7 +221,7 @@ do
         echo "Ploidy and purity estimation is done"
         echo "Integer programming..."
 	
-	Rscript $library/integer_programming.R $sample "copy_numbers_ABSOLUTE_input.negative_marker" $SV $read_length> IP.log
+	Rscript $library/integer_programming.R $sample "copy_numbers_ABSOLUTE_input.negative_marker" $SV $read_length $stringent > IP.log
 	test1=`cat SVs.CN_opt.filtered | wc -l`
 	test2=`cat SVs | wc -l`
 	
@@ -240,8 +246,9 @@ do
                 lc=`cat exclude | wc -l`
 
                 if [ $test3 -eq $test4 ];then
-                        break;
+			exit 1;
                 fi
+		echo -e "iter$iter.block_clusters" >> itr.log
 
 	fi
 	cd ../

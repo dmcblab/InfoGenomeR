@@ -112,8 +112,7 @@ for(i in 1:nrow(cn)){
 		obj1 = obj1 - cn1;
 		obj2 = obj2 - cn2;
 
-
-		if (obj1+obj2 < new_obj){
+                if (!is.na(obj1+obj2) && !is.na(new_obj) &&  obj1+obj2 < new_obj){
 			next;
 		}
 
