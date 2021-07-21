@@ -10,6 +10,7 @@ chr_prefix=0  # The reference genome has "chr" prefix or not
 read_length=100
 bam=null
 normal_bam=null
+stringent="F"
 POSITIONAL=()
 while [[ $# -gt 0 ]]; do
   key="$1"
@@ -51,6 +52,11 @@ while [[ $# -gt 0 ]]; do
       ;;
     -o|--out_dir)
       out_dir=`readlink -f "$2"`
+      shift
+      shift
+      ;;
+    --stringent)
+      stringent="T"
       shift
       shift
       ;;
@@ -223,7 +229,7 @@ do
         echo "Ploidy and purity estimation is done"
         echo "Integer programming..."
 	
-	Rscript $library/integer_programming.R $sample "copy_numbers_ABSOLUTE_input.negative_marker" $SV $read_length> IP.log
+	Rscript $library/integer_programming.R $sample "copy_numbers_ABSOLUTE_input.negative_marker" $SV $read_length $stringent > IP.log
 	test1=`cat SVs.CN_opt.filtered | wc -l`
 	test2=`cat SVs | wc -l`
 	
@@ -240,7 +246,7 @@ do
                 if [ $SV_l1 -eq $SV_l2 ];then
                         exit 1
                 fi
-
+		echo -e "iter$iter.simplified" >> itr.log
                 cp complex_SV ../SVs
 
 	fi

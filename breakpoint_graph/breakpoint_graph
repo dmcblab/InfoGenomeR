@@ -263,8 +263,18 @@ else
 	new_sv_lines=0;
 	while [[ $sv_lines -ne $new_sv_lines ]];do
 		sv_lines=`cat SVs | wc -l`
-		$library/breakpoint_graph_simple_SVs $bin -m $mode -f $lambda_fi -t $cancer_type -n $min_ploidy -x $max_ploidy -c $normal_bin -o $PWD
-		$library/breakpoint_graph_block_clusters $bin -m $mode -f $lambda_fi -t $cancer_type -n $min_ploidy -x $max_ploidy -c $normal_bin -o $PWD
+		if [[ $stringent == "T" ]];then
+	    		$library/breakpoint_graph_simple_SVs $bin -m $mode -f $lambda_fi -t $cancer_type -n $min_ploidy -x $max_ploidy -c $normal_bin -o $PWD --stringent
+		else
+			$library/breakpoint_graph_simple_SVs $bin -m $mode -f $lambda_fi -t $cancer_type -n $min_ploidy -x $max_ploidy -c $normal_bin -o $PWD
+		fi
+                if [[ $stringent == "T" ]];then
+
+			$library/breakpoint_graph_block_clusters $bin -m $mode -f $lambda_fi -t $cancer_type -n $min_ploidy -x $max_ploidy -c $normal_bin -o $PWD --stringent
+		else
+			 $library/breakpoint_graph_block_clusters $bin -m $mode -f $lambda_fi -t $cancer_type -n $min_ploidy -x $max_ploidy -c $normal_bin -o $PWD
+
+		fi
 		new_sv_lines=`cat SVs | wc -l`
 	done
         bin="$PWD/cn_norm_simple/"
@@ -275,7 +285,7 @@ else
 	min_simplifying_iter=`cat itr.log |  grep -P '^iter[1-9][0-9]{0,2}.block_clusters$' |  awk 'BEGIN{min=999}{split($1,f,"iter"); split(f[2],g,".block_clusters"); if(min>g[1]) min=g[1];}END{print min}'`
 	cd iter$iter;
 		Rscript $library/TO_bpgraph_hidden_node_for_connectivity.R
-		Rscript $library/lite_SV_edges.R ../iter$min_simplifying_iter\/SVs ../iter1/SVs $search_length T
+		Rscript $library/lite_SV_edges.R SVs ../iter$min_simplifying_iter\/SVs  $search_length T
 #		$library/SV_truncated_wgs SVs.added $bin
 		cp SVs.added ../SVs
 	cd ../
