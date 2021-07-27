@@ -1,1 +1,0 @@
-g++ dag_N.cpp --std=c++11 -o phasing
