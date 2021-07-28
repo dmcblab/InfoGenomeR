@@ -247,7 +247,7 @@ cp germline_job/copy_numbers ./copy_numbers.control
 ## Merge SV calls.
 cat delly.format manta.format novobreak.format > SVs
 ## breakpoint graph construction
-breakpoint_graph --stringent -m somatic -d ./ SVs ./cp_norm -g /home/dmcblab/GRCh37/GRCh37 -c cp_norm_germ -s copy_numbers.control -o somatic_job
+breakpoint_graph -m somatic -d ./ SVs ./cp_norm -g /home/dmcblab/GRCh37/GRCh37 -c cp_norm_germ -s copy_numbers.control -o somatic_job --stringent
 ## allele graph construction
 allele_graph -m somatic -s copy_numbers.control hom_snps.format het_snps.format -o somatic_job -g /home/dmcblab/GRCh37/GRCh37 -t 23
 ## haplotype graph construction
@@ -286,7 +286,7 @@ precision:0.937500 recall:0.532710 fmeasure: 0.679380
 ## Merge SV calls.
 cat delly.format manta.format novobreak.format > SVs
 ## breakpoint graph construction
-breakpoint_graph --stringent -m somatic -d ./ SVs ./cp_norm -g /home/dmcblab/GRCh38/GRCh38 -c cp_norm_germ -s copy_numbers.control -o somatic_job
+breakpoint_graph -m somatic -d ./ SVs ./cp_norm -g /home/dmcblab/GRCh38/GRCh38 -c cp_norm_germ -s copy_numbers.control -o somatic_job --stringent
 ## allele graph construction
 allele_graph -m somatic -s copy_numbers.control hom_snps.format het_snps.format -o somatic_job -g /home/dmcblab/GRCh38/GRCh38 -t 23
 ## haplotype graph construction
