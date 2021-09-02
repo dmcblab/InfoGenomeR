@@ -181,7 +181,7 @@ for(i in 1:nrow(sv)){
                         }
                 }
                 where=which(sv[,1]=="<INV>" & sv[,6]=="3to3" & sv[,2] == sv[i,2] & (abs(sv[,3]-sv[i,3])<break_thres & sv[,3] < sv[i,3] & abs(sv[,5]-sv[i,5])<break_thres & sv[,5] < sv[i,5]) & sv[,15] == sv[i,15])
-                if(length(where)==1){
+                if(abs(sv[i,3]-sv[i,5])<break_thres & length(where)==1){
                         if(which(cn[,2]==sv[i,2] & cn[,4] == sv[where,3]) +2 == which(cn[,2]==sv[i,2] & cn[,3]== sv[i,3]) &&
                            which(cn[,2]==sv[i,2] & cn[,4] == sv[where,5]) == which(cn[,2]==sv[i,2] & cn[,3]== sv[i,3]) &&
                            which(cn[,2]==sv[i,2] & cn[,4] == sv[where,5])+2 == which(cn[,2]==sv[i,2] & cn[,3]== sv[i,5])){
