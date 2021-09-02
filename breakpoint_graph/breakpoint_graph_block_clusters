@@ -162,7 +162,9 @@ cp SVs.CN_opt.filtered.simplified ../SVs
 
 SV_l1=`cat SVs.CN_opt.filtered.simplified | wc -l`
 SV_l2=`cat SVs.CN_opt.filtered | wc -l`
-cp cluster_sv ../
+if [ -s "cluster_sv" ];then
+	cp cluster_sv ../
+fi
 cd ../
 
 

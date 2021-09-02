@@ -1,0 +1,78 @@
+#!/bin/bash
+
+POSITIONAL=()
+while [[ $# -gt 0 ]]; do
+  key="$1"
+  case $key in
+    -o|--breakpoint_graph_dir)
+      out_dir=`readlink -f "$2"`
+      shift
+      shift
+      ;;
+    -v|--version)
+      echo "1.0.1"
+      exit 1
+      ;;
+    -h|--help)
+	echo -e "
+\t-o, --breakpoint_graph_dir \n \t\t The output directory of breakpoint graph construction
+\t-h, --help\n
+"
+      exit 1
+      ;;
+    *)
+     POSITIONAL+=("$1") # save it in an array for later
+     shift
+     ;;
+  esac
+done
+
+set -- "${POSITIONAL[@]}" # restore positional parameters
+if [[ ! -s $out_dir ]];then
+        echo "The output directory of breakpoint graph construction is not found."
+        exit 1
+fi
+
+
+cd $out_dir
+iter=`ls -l | grep -E 'iter[1-9]?[0-9]?[0-9]$' | awk 'BEGIN{max=0}{split($9,f,"iter"); if(max<f[2]) max=f[2];}END{print max}'`
+mkdir InfoGenomeR_output/karyotypes
+cd iter$iter
+
+
+while read -r -a line;do
+	cd ${line[0]}
+
+	all="F"
+	euler_library=$InfoGenomeR_lib/Eulerian/DAG_entropy
+
+	parameters=`cat edge_information.txt   | awk 'BEGIN{total_nodes=0;total_edges=0; hidden_node=0; hidden_edge=0}{if($1>total_nodes){total_nodes=$1};if($2>total_nodes){total_nodes=$2};total_edges=$6;hidden_edge=$7}END{print (total_nodes+2)"\t"(total_edges+1)"\t"(total_nodes+1)"\t"(hidden_edge+1)}'`
+	total_nodes=`echo $parameters |awk '{print $1}'`;
+	total_edges=`echo $parameters| awk '{print $2}'`;
+	hidden_node=`echo $parameters| awk '{print $3}'`;
+	hidden_edge=`echo $parameters| awk '{print $4}'`;
+
+	if [[ $all == "F" ]];then
+		level_index=`$euler_library/main true 0 0 $total_nodes $total_edges $hidden_node $hidden_edge | grep level_index`;
+		index1=`echo $level_index | awk '{print $2}'`;
+		index2=`echo $level_index | awk '{print $3}'`;
+		
+		i=$index1;
+		while [[ $i -lt $index2 ]];do
+			$euler_library\/main false $i $index2 $total_nodes $total_edges $hidden_node $hidden_edge | grep new;
+			i=$(($i+1));
+		done
+	else
+
+		$euler_library/main false 0 0 $total_nodes $total_edges $hidden_node $hidden_edge 
+	fi
+
+	i=1
+	Rscript $InfoGenomeR_lib/Eulerian/euler_cycle_format_v2.R > euler_paths.0.format
+	cat euler_paths.0 | awk '{for(i=NF;i>0;i=i-1){if(i!=1){printf "%s\t", $i;}else{printf "%s\n", $i;}}}'    | awk 'BEGIN{start=0;}{g="gnodes"'"$i"'; n=split($1,s,"gnodes"); if(n==2){if($1==g){start=1;}else{start=0}}; if(start==1){print $0}}' | grep -v -e '-1' | grep -v gnodes  | awk -f $InfoGenomeR_lib/Eulerian/euler_path_format.awk >  euler_paths.0.edges
+
+	cd ../
+
+	cp -r ${line[0]} ../InfoGenomeR_output/karyotypes
+done < euler.list
+
