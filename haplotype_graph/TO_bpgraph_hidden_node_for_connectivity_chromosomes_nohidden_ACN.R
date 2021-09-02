@@ -296,11 +296,13 @@ write.table(all_e[!(all_e$edge1==(hidden_node-1) | all_e$edge2==(hidden_node-1))
 
 write.table(data.frame(V1=degree$node-1, V2=degree$degree, V3=degree$degree),"degrees",quote=F, sep="\t",col.names=F, row.names=F)
 
+d1$hap=1
+d2$hap=2
 
 d=rbind(d1,d2);
 d$node=d$node-1
 
-write.table(d[,1:3],"node_keys",quote=F ,sep="\t", col.names=T,row.names=T)
+write.table(d[,c(1:3,6)],"node_keys",quote=F ,sep="\t", col.names=T,row.names=T)
 
 ### 오일러 사이클을 위한 것. 오일러 경로를 뽑기 위해선 하나의 edge를 제거###
 
