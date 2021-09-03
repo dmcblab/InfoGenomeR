@@ -346,7 +346,7 @@ Rscript $InfoGenomeR_lib/etc/graph_plot.R # It generates ACN.pdf
 
 - Visualizing karyotypes
 ```
-### Visualize karyotypes
+### chromosomes 3,5,10,12, and 20
 cd karyotypes/
 cd euler.3.5.10.12.20
 Rscript $InfoGenomeR_lib/etc/chromosomes_graph.R # It generates karyotypes.pdf
@@ -355,12 +355,28 @@ Rscript $InfoGenomeR_lib/etc/chromosomes_graph.R # It generates karyotypes.pdf
     <img width="1500" src="https://github.com/YeonghunL/InfoGenomeR/blob/master/doc/InfoGenomeR_output/euler.3.5.10.12.20/karyotypes.png">
   </a>
 </p>
+
 ```
+### chromosomes 6, 11, 16, and 22
 cd ../
 cd euler.6.11.16.22
+Rscript $InfoGenomeR_lib/etc/chromosomes_graph.R # It generates karyotypes.pdf
 ```
 <p align="center">
     <img width="1500" src="https://github.com/YeonghunL/InfoGenomeR/blob/master/doc/InfoGenomeR_output/euler.6.11.16.22/karyotypes.png">
   </a>
 </p>
+
+```
+### chromosomes 8 and 14
+cd ../
+cd euler.8.14
+Rscript $InfoGenomeR_lib/etc/chromosomes_graph.R # It generates karyotypes.pdf
+```
+<p align="center">
+    <img width="700" src="https://github.com/YeonghunL/InfoGenomeR/blob/master/doc/InfoGenomeR_output/euler.8.14/karyotypes.png">
+  </a>
+</p>
+
+
 
