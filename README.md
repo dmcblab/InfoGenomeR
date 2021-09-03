@@ -68,7 +68,7 @@ export PATH=$InfoGenomeR_lib/ext:$PATH
 ```
 - set the PATH environment.
 ```
-export PATH=$InfoGenomeR_lib/breakpoint_graph:$InfoGenomeR_lib/allele_graph:$InfoGenomeR_lib/haplotype_graph:$PATH
+export PATH=$InfoGenomeR_lib/breakpoint_graph:$InfoGenomeR_lib/allele_graph:$InfoGenomeR_lib/haplotype_graph:$InfoGenomeR_lib/Eulerian:$PATH
 ```
 
 # Inputs
@@ -146,6 +146,13 @@ Usage: haplotype_graph [options]
                  The number of threads
         -h, --help
 ```
+- Karyotyping
+```
+Usage: karyotyping [options]
+        -o, --breakpoint_graph_dir
+                 The output directory of breakpoint graph construction
+        -h, --help
+```
 # How to generate inputs from BAM
 - We provide scripts for generating inputs using BIC-seq2, DELLY2, Manta, and novobreak, but we recommend that a user follow the guideline of each tool.
 - Generate cn_norm and cn_norm_germ.
@@ -219,6 +226,7 @@ tumor_bam=tumor.bam
 - Download tutorial files. Tutorial files contains input files for InfoGenomeR. 
 - Tutorial 1:Germline and somatic mode (GRCh37). a simiulated cancer genome (haplotype coverage 5X, triploidy, purity 75%) that has 162 somatic SVs (true_SV_sets_somatic). [Tutorial_1](https://zenodo.org/record/5105505/files/tutorial1.tar.xz).
 - Tutorial 2:Somatic mode (GRCh38). a simiulated cancer genome (haplotype coverage 10X, triploidy, purity 75%). [Tutorial_2](https://zenodo.org/record/4545666/files/GRCh38.triploidy.f10.p0.75.tar.xz)
+- Tutorial 3:Total mode, graph simpification, and karyotyping (GRCh37). T47D breast cancer cell line (SRR5371367).
 
 # Tutorial 1 (GRCh37)
 ```
@@ -298,4 +306,41 @@ haplotype_graph -o somatic_job -t 6 ## 40GB memory per one thread ( total about 
 ## The output directory is InfoGenomeR_output
 Rscript SV_performance.R somatic_job/InfoGenomeR_output/SVs.CN_opt.phased ./simulated_genome/true_SV_sets_somatic_dup_checked.refcoor
 precision:0.971910 recall:0.808411 fmeasure: 0.882653
+```
+# Tutorial 3
+- Running InfoGenomeR.
+```
+## breakpoint graph construction (It takes a day during about 50 iterations)
+breakpoint_graph -m total SVs cn_norm/ -i 16 -f 2000 -o total_job -t BRCA
+breakpoint_graph -m simplification -o total_job -i 16 -f 2000 total_job/SVs total_job/cn_norm/ -t BRCA
+## allele graph construction
+allele_graph -m total -g /DASstorage6/home/dmcblab/GRCh37/GRCh37 -o total_job -t 23 hom_snps.format het_snps.format
+## haplotype graph construction
+haplotype_graph -o total_job -t 6
+## Find Eulerian paths with a minimum entropy
+karyotyping -o total_job
+```
+- It outputs files in total_job/InfoGenomeR_output
+	- copy_number.CN_opt.phased
+	- haplotype
+	- karyotypes
+	- purity_ploidy
+	- SVs.CN_opt.phased
+
+
+- Visualization
+```
+### Visualize the haplotype graph. The total_job_test folder has outputs by pre-run.
+cd total_job_test/InfoGenomeR_output
+Rscript $InfoGenomeR_lib/etc/graph_plot.R # It generates ACN.pdf
+```
+<p align="center">
+    <img height="700" src="https://github.com/YeonghunL/InfoGenomeR/blob/master/doc/InfoGenomeR_output/ACN.pdf">
+  </a>
+</p>
+```
+### Visualize karyotypes
+cd karyotypes/
+cd euler.3.5.10.12.20
+Rscript $InfoGenomeR_lib/etc/chromosomes_graph.R # It generates karyotypes.pdf
 ```
