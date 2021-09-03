@@ -328,19 +328,25 @@ karyotyping -o total_job
 	- SVs.CN_opt.phased
 
 
-- Visualization
+- Visualizing the haplotype graph.
 ```
 ### Visualize the haplotype graph. The total_job_test folder has outputs by pre-run.
 cd total_job_test/InfoGenomeR_output
 Rscript $InfoGenomeR_lib/etc/graph_plot.R # It generates ACN.pdf
 ```
 <p align="center">
-    <img height="700" src="https://github.com/YeonghunL/InfoGenomeR/blob/master/doc/InfoGenomeR_output/ACN.pdf">
+    <img height="700" src="https://github.com/YeonghunL/InfoGenomeR/blob/master/doc/InfoGenomeR_output/ACN.png">
   </a>
 </p>
+
+- Visualizing karyotypes
 ```
 ### Visualize karyotypes
 cd karyotypes/
 cd euler.3.5.10.12.20
 Rscript $InfoGenomeR_lib/etc/chromosomes_graph.R # It generates karyotypes.pdf
 ```
+<p align="center">
+    <img height="700" src="https://github.com/YeonghunL/InfoGenomeR/blob/master/doc/InfoGenomeR_output/euler.3.5.10.12.20/karyotypes.png">
+  </a>
+</p>
