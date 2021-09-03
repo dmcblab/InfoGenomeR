@@ -2,7 +2,7 @@
 - InfoGenomeR is the Integrative Framework for Genome Reconstruction that uses a breakpoint graph to model the connectivity among genomic segments at the genome-wide scale. InfoGenomeR integrates cancer purity and ploidy, total CNAs, allele-specific CNAs, and haplotype information to identify the optimal breakpoint graph representing cancer genomes.
 
 <p align="center">
-    <img height="700" src="https://github.com/YeonghunL/InfoGenomeR/blob/master/doc/overview.png">
+    <img width="1500" src="https://github.com/YeonghunL/InfoGenomeR/blob/master/doc/overview.png">
   </a>
 </p>
 
@@ -308,6 +308,11 @@ Rscript SV_performance.R somatic_job/InfoGenomeR_output/SVs.CN_opt.phased ./simu
 precision:0.971910 recall:0.808411 fmeasure: 0.882653
 ```
 # Tutorial 3
+```
+wget http://gcancer.org/InfoGenomeR/tutorial3.tar.gz
+tar -xvf tutorial3.tar.gz
+cd tutorial3
+```
 - Running InfoGenomeR.
 ```
 ## breakpoint graph construction (It takes a day during about 50 iterations)
@@ -335,7 +340,7 @@ cd total_job_test/InfoGenomeR_output
 Rscript $InfoGenomeR_lib/etc/graph_plot.R # It generates ACN.pdf
 ```
 <p align="center">
-    <img height="700" src="https://github.com/YeonghunL/InfoGenomeR/blob/master/doc/InfoGenomeR_output/ACN.png">
+    <img width="700" src="https://github.com/YeonghunL/InfoGenomeR/blob/master/doc/InfoGenomeR_output/ACN.png">
   </a>
 </p>
 
@@ -347,6 +352,15 @@ cd euler.3.5.10.12.20
 Rscript $InfoGenomeR_lib/etc/chromosomes_graph.R # It generates karyotypes.pdf
 ```
 <p align="center">
-    <img height="700" src="https://github.com/YeonghunL/InfoGenomeR/blob/master/doc/InfoGenomeR_output/euler.3.5.10.12.20/karyotypes.png">
+    <img width="1500" src="https://github.com/YeonghunL/InfoGenomeR/blob/master/doc/InfoGenomeR_output/euler.3.5.10.12.20/karyotypes.png">
   </a>
 </p>
+```
+cd ../
+cd euler.6.11.16.22
+```
+<p align="center">
+    <img width="1500" src="https://github.com/YeonghunL/InfoGenomeR/blob/master/doc/InfoGenomeR_output/euler.6.11.16.22/karyotypes.png">
+  </a>
+</p>
+
