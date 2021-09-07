@@ -15,6 +15,7 @@ chr_prefix=0  # The reference genome has "chr" prefix or not
 stringent="F"
 bam=null
 normal_bam=null
+black_removal="T"
 POSITIONAL=()
 while [[ $# -gt 0 ]]; do
   key="$1"
@@ -237,12 +238,26 @@ if [ $mode == "somatic" ];then
 	normal_bin="$PWD/cn_norm_germ/"
 fi
 
-if [ $mode == "somatic" ];then
-	Rscript $library/bin_blacklist.R $bin cn_norm ${InfoGenomeR_lib}/humandb/${Ref_version}_Excludable.bed
-	Rscript $library/bin_blacklist.R $normal_bin cn_norm_germ ${InfoGenomeR_lib}/humandb/${Ref_version}_Excludable.bed
-else
-	mkdir -p cn_norm
-	Rscript $library/bin_blacklist.R $bin cn_norm ${InfoGenomeR_lib}/humandb/${Ref_version}_Excludable.bed
+if [ $mode != "simplification" ];then
+
+	if [ $black_removal == "T" ];then
+			cat ${InfoGenomeR_lib}/humandb/${Ref_version}_Excludable.bed | cut -f1-3 > blacklist
+			cat ${InfoGenomeR_lib}/humandb/${Ref_version}_cytoBand.txt | awk '{split($1,f,"chr"); if($5=="acen"){if(f[2]~/^[1-2]?[0-9]$/ || f[2]=="X"){print f[2]"\t"$2"\t"$3}}}' | awk '{if(NR %2==1){print $1"\t"$2-1000000"\t"$3}else{print $1"\t"$2"\t"$3+1000000}}' >> blacklist
+	fi
+
+	if [ $mode == "somatic" ];then
+		if [ $black_removal == "T" ];then
+			Rscript $library/bin_blacklist.R $bin cn_norm blacklist
+			Rscript $library/bin_blacklist.R $normal_bin cn_norm_germ blacklist
+		fi
+	else
+		mkdir -p cn_norm
+		if [ $black_removal == "T" ];then
+			Rscript $library/bin_blacklist.R $bin cn_norm blacklist
+		else
+			cp $bin\/cn_norm/*.bin ./cn_norm
+		fi
+	fi
 fi
 
 
@@ -255,9 +270,16 @@ ROUND=1
 iter_start=1
 if [[ $mode != "simplification" ]];then
 	Rscript $library/SV_break_adjustment.R
-	Rscript $library/SV_blacklist.R SVs ${InfoGenomeR_lib}/humandb/${Ref_version}_Excludable.bed
+	if [ $black_removal == "T" ];then
+		Rscript $library/SV_blacklist.R SVs blacklist
+	fi
 	$library/SV_truncated_wgs SVs $bin
 else
+	if [ -s cn_norm_germ ];then
+		mode=somatic
+	else
+		mode=total
+	fi
 	echo "itr.log" > itr.log
 	sv_lines=`cat SVs | wc -l`
 	new_sv_lines=0;
