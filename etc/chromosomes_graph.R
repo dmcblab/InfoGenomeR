@@ -32,6 +32,13 @@ draw.half.circle=function (x, y, radius, nv = 100, border = NULL, col = NA, lty 
 
 
 t=read.table("node_keys",stringsAsFactors=F)
+i=1
+while(i<(nrow(t)-1)){
+	if(t[i,1] ==t[i+2,1] && t[i,4] == t[i+2,4] && (t[i+1,2]+1) != t[i+2,2]){
+		t[i+2,2]=t[i+1,2]+1
+	}
+	i=i+2
+}
 chr=unique(t[,1])
 
 tel=c();
@@ -80,11 +87,19 @@ xmax=100;
 
 
 
-chr_color=data.frame(chrom=c(1:23),color=c("#5C575F","#774697","#3153A8","#74C1A1","#56AF5A","#FCBC00","#E40852","#A39FD1","#4979BF","#9B0E1A","#EFE83D","#E2655F","#C887BD","#ACCE5D","#8562AC","#69B70A","#206B42","#D03A01","#DCDCE8","#D70000","#80C5DE","#55429C","#F9F089"),stringsAsFactors=FALSE)
+chr_color=data.frame(chrom=c(1:22,"X"),color=c("#5C575F","#774697","#3153A8","#74C1A1","#56AF5A","#FCBC00","#E40852","#A39FD1","#4979BF","#9B0E1A","#EFE83D","#E2655F","#C887BD","#ACCE5D","#8562AC","#69B70A","#206B42","#D03A01","#DCDCE8","#D70000","#80C5DE","#55429C","#F9F089"),stringsAsFactors=FALSE)
 
 
 
 d=read.table("node_keys",stringsAsFactors=F)
+i=1
+while(i<(nrow(d)-1)){
+        if(d[i,1] ==d[i+2,1] && d[i,4] == d[i+2,4] && (d[i+1,2]+1) != d[i+2,2]){
+                d[i+2,2]=d[i+1,2]+1
+        }
+        i=i+2
+}
+
 
 #############################################################################
 
