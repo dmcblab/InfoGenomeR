@@ -110,15 +110,12 @@ if [[ $cn_norm == "" ]] || [[ ! -s $cn_norm ]];then
 fi
 echo "cn_norm_germ = ${cn_norm_germ}"
 if [[ $mode == "somatic" ]];then
-	if [[ $cn_norm_germ == "" ]];then
-		echo "cn_norm_germ directory is required";
-		exit 1
-	fi
-        if [[ $germ_LocSeq_result == "" ]];then
-                echo "germ_LocSeq_result is required";
+        if [[ $cn_norm_germ == "" ]];then
+                echo "cn_norm_germ directory is required";
                 exit 1
         fi
 fi
+
 
 bin="$cn_norm/"
 normal_bin="$cn_norm_germ/"

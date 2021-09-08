@@ -315,7 +315,7 @@ cd tutorial3
 ```
 - Running InfoGenomeR.
 ```
-## breakpoint graph construction (It takes a day during about 50 iterations)
+## breakpoint graph construction (It takes a day during about 30 iterations)
 breakpoint_graph -m total SVs cn_norm/ -i 16 -f 2000 -o total_job -t BRCA
 breakpoint_graph -m simplification -o total_job -i 16 -f 2000 total_job/SVs total_job/cn_norm/ -t BRCA
 ## allele graph construction
@@ -366,17 +366,6 @@ Rscript $InfoGenomeR_lib/etc/chromosomes_graph.R # It generates karyotypes.pdf
 ```
 <p align="center">
     <img width="1700" src="https://github.com/YeonghunL/InfoGenomeR/blob/master/doc/InfoGenomeR_output/euler.3.5.10.12.20/karyotypes.png">
-  </a>
-</p>
-
-```
-### chromosomes 6, 11, 16, and 22
-cd ../
-cd euler.6.11.16.22
-Rscript $InfoGenomeR_lib/etc/chromosomes_graph.R # It generates karyotypes.pdf
-```
-<p align="center">
-    <img width="750" src="https://github.com/YeonghunL/InfoGenomeR/blob/master/doc/InfoGenomeR_output/euler.6.11.16.22/karyotypes.png">
   </a>
 </p>
 

@@ -40,22 +40,23 @@ for( i in 1:23){
 maxt=maxt;	
 
 pdf("ACN.pdf",width=20, height=15)
-plot(c(-10000000,t[16,4]+(maxt+10)*10000000),c(0,120), xlab="", ylab="", col="white",cex.axis=1.5, cex.main=1.5, cex.lab=1.5, cex.sub=1.5,axes=0)
+xmax=max(t[,4])
+plot(c(-10000000,xmax+(maxt+10)*10000000),c(0,120), xlab="", ylab="", col="white",cex.axis=1.5, cex.main=1.5, cex.lab=1.5, cex.sub=1.5,axes=0)
 j=0
 chr=1
 d=data.frame(chrom=0,key=0,value=0, expanded=0)
 dindex=1
 
-xlim=t[16,4]+(maxt+10)*10000000;
+xlim=xmax+(maxt+10)*10000000;
 
 colgrad=5
-text(t[16,4]+maxt*10000000 - 105000000, 122, "hap1",cex=1.5)
-text(t[16,4]+maxt*10000000 - 125000000, 122, "hap2",cex=1.5)
+text(xmax+maxt*10000000 - 105000000, 122, "hap1",cex=1.5)
+text(xmax+maxt*10000000 - 125000000, 122, "hap2",cex=1.5)
 
 for( i in 1:colgrad){
-	text(t[16,4]+maxt*10000000 - 140000000, 120 - 3.5*i+1.75, i,cex=1.5)
-        rect(t[16,4]+maxt*10000000 - 110000000, 120 - 3.5*i , t[16,4]+maxt*10000000-100000000, 120 - 3.5*(i-1), col=colfunc1(colgrad)[i], lwd=1, border=NA);
-        rect(t[16,4]+maxt*10000000 - 130000000, 120 - 3.5*i , t[16,4]+maxt*10000000-120000000, 120 - 3.5*(i-1), col=colfunc2(colgrad)[i], lwd=1, border=NA);
+	text(xmax+maxt*10000000 - 140000000, 120 - 3.5*i+1.75, i,cex=1.5)
+        rect(xmax+maxt*10000000 - 110000000, 120 - 3.5*i , xmax+maxt*10000000-100000000, 120 - 3.5*(i-1), col=colfunc1(colgrad)[i], lwd=1, border=NA);
+        rect(xmax+maxt*10000000 - 130000000, 120 - 3.5*i , xmax+maxt*10000000-120000000, 120 - 3.5*(i-1), col=colfunc2(colgrad)[i], lwd=1, border=NA);
 }
 for( i in 1:23){
 	if(i==23){
