@@ -69,6 +69,10 @@ Rscript $library/TO_bpgraph_hidden_node_for_connectivity_chromosomes_job_ACN.R $
 cd ../
 mkdir InfoGenomeR_output
 mkdir InfoGenomeR_output/haplotype
+mkdir InfoGenomeR_output/karyotypes
+while read -r -a line;do
+	cp -r iter$iter\/${line[0]} ./InfoGenomeR_output/karyotypes/
+done < iter$iter\/euler.list
 
 cp iter$iter\/diploid_haplotype.* InfoGenomeR_output/haplotype
 cat iter$iter\/copy_numbers.CN_opt.ACN.phased  | cut -f1,2,3,28,29 > InfoGenomeR_output/copy_number.CN_opt.phased
