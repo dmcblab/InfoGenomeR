@@ -309,7 +309,7 @@ precision:0.971910 recall:0.808411 fmeasure: 0.882653
 ```
 # Tutorial 3
 ```
-wget http://gcancer.org/InfoGenomeR/tutorial3.tar.gz
+wget https://zenodo.org/record/5719772/files/tutorial3.tar.gz
 tar -xvf tutorial3.tar.gz
 cd tutorial3
 ```
