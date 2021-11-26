@@ -18,7 +18,7 @@
     - ABSOLUTE (version 1.0.6)
     - fitdistrplus (version 1.1.11)
     - plyr (version 1.8.4)
-    - plotrix (version 3.8)
+    - plotrix (version 3.7)
 - BIC-seq2 (version 0.7.2)
 # Environment settings
 - download InfoGenomeR and BIC-seq2 in your working directory. 
