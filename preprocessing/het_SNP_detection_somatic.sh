@@ -4,7 +4,7 @@ normal_bam=normal.bam
 tumor_bam=tumor.bam
 
 mkdir vcf_somatic
-for l in seq `1 22`;do
+for l in `seq 1 22`;do
 		samtools mpileup -t DP,AD,ADF,ADR,SP -q 10 -d 5000 -I -uf $reference $normal_bam $tumor_bam -r $l | bcftools call -c -v > vcf_somatic/$l.vcf
 done
 l='X';
