@@ -162,7 +162,7 @@ Usage: karyotyping [options]
 ```
 reference=hg19.fa
 norm_script=./NBICseq-norm_v0.2.4/NBICseq-norm.pl
-map_file=./NBICseq-norm_v0.2.4/hg19.CRG.50bp/
+map_file=./NBICseq-norm_v0.2.4/hg19.CRG.50bp
 read_length=100
 fragment_size=350
 tumor_bam=tumor.bam
@@ -172,7 +172,7 @@ tumor_bam=tumor.bam
  ```
 reference=hg19.fa
 norm_script=./NBICseq-norm_v0.2.4/NBICseq-norm.pl
-map_file=./NBICseq-norm_v0.2.4/hg19.CRG.50bp/
+map_file=./NBICseq-norm_v0.2.4/hg19.CRG.50bp
 read_length=100
 fragment_size=350
 normal_bam=normal.bam
