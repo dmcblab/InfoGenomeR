@@ -1,3 +1,6 @@
+args=commandArgs(T)
+min_dm_copy=5
+
 library(plyr)
 path=scan("euler_paths.0", what="character", sep="\n",skip=1)
 for( i in 1:length(path)){
@@ -55,6 +58,18 @@ entropy= function(lp){
 
 
 op=path
+
+path_count=rep(0, length(path))
+for(i in 1:length(path)){
+	e_path_count=0
+	for(j in 1:length(path)){
+		if(length(path[[i]]) == length(path[[j]]) && (all(path[[i]] == path [[j]]) || all (rev(path[[i]]) == path[[j]]))){
+			e_path_count=e_path_count+1
+		}
+	}
+	path_count[i]=e_path_count;
+}
+
 #v=c()
 for( i in 1:length(op)){
 	if (path[[i]][1] == "-1"){
@@ -101,6 +116,8 @@ for( i in 1:length(op)){
 				}else if(ik > 1 && ik < length(path[[ij]]) && path[[ij]][ik+1]==ne){
 					p=path[[i]][2:(length(path[[i]])-2)]
 					p=rev(p)
+				}else{
+					next;
 				}
 				if(length(p)>0){
 					path[[ij]]=append(path[[ij]], p, after=ik)
@@ -109,10 +126,16 @@ for( i in 1:length(op)){
 				ent2= c(ent2,entropy(path))
 				alt_path[[length(alt_path)+1]]=path
 			}
-
-			if(ent1 > min(ent2)){
-				w=which.min(ent2)
-				op=alt_path[[w]]
+			if(args[1]!="dup" && path_count[i]>min_dm_copy){
+				if(ent1 > min(ent2)){
+					w=which.min(ent2)
+					op=alt_path[[w]]
+				}
+			}else{
+				if(length(ent2)>0){
+					w=which.min(ent2)
+					op=alt_path[[w]]
+				}
 			}
 		}
 	}

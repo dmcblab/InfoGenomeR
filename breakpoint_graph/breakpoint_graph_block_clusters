@@ -35,6 +35,12 @@ while [[ $# -gt 0 ]]; do
      shift
      shift
      ;;
+    -e|--simple_length)
+      simple_length="$2"
+      shift
+      shift
+      ;;
+
     -t|--cancer_type)
       cancer_type="$2"
       shift
@@ -50,8 +56,8 @@ while [[ $# -gt 0 ]]; do
       shift
       shift
       ;;
-    --stringent)
-      stringent="T"
+    -s|--stringent)
+      stringent="$2"
       shift
       shift
       ;;
@@ -144,9 +150,9 @@ echo -e "iter$iter.block_clusters" >> itr.log
 cd iter$iter
 
 if [ -s "cluster_sv" ];then
-        Rscript $library/simple_graph.R F $cyto
-else
-        Rscript $library/simple_graph.R T $cyto
+        Rscript $library/simple_graph.R F $cyto $simple_length
+else 
+        Rscript $library/simple_graph.R T $cyto $simple_length
 fi
 
 if [ $mode == "somatic" ];then
@@ -227,9 +233,9 @@ do
 	cp SVs.CN_opt.filtered ../SVs
 	if [[ $test1 -eq $test2 ]];then
                 if [ -s "cluster_sv" ];then
-                        Rscript $library/simple_graph.R F $cyto
+                        Rscript $library/simple_graph.R F $cyto $simple_length
                 else
-                        Rscript $library/simple_graph.R T $cyto
+                        Rscript $library/simple_graph.R T $cyto $simple_length
                 fi
 
                 if [ $mode == "somatic" ];then

@@ -30,6 +30,11 @@ while [[ $# -gt 0 ]]; do
       shift
       shift
       ;;
+    -e|--simple_length)
+      simple_length="$2"
+      shift
+      shift
+      ;;
     -n|--min_ploidy)
      min_ploidy="$2"
      shift
@@ -55,8 +60,8 @@ while [[ $# -gt 0 ]]; do
       shift
       shift
       ;;
-    --stringent)
-      stringent="T"
+    -s|--stringent)
+      stringent="$2"
       shift
       shift
       ;;
@@ -155,7 +160,7 @@ cd iter$iter
         fi
 
 
-Rscript $library/simple_filter.R
+Rscript $library/simple_filter.R $simple_length
 
 SV_l1=`cat complex_SV | wc -l`
 SV_l2=`cat SVs | wc -l`
@@ -232,7 +237,7 @@ do
 	
 	cp SVs.CN_opt.filtered ../SVs
 	if [[ $test1 -eq $test2 ]];then
-                Rscript $library/simple_filter.R
+                Rscript $library/simple_filter.R $simple_length
 		SV_l1=`cat complex_SV | wc -l`
 		SV_l2=`cat SVs | wc -l`
                 if [ $mode == "somatic" ];then

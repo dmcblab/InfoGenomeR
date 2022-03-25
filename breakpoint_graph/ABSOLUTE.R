@@ -51,6 +51,14 @@ while(satisfied < 2){
 
 		RunAbsolute("copy_numbers_ABSOLUTE_input", sigma.p, max.sigma.h, min.ploidy, max.ploidy, primary.disease, "SNP_6.0", sample.name, results.dir, max.as.seg.count, max.non.clonal, max.neg.genome, copy_num_type, maf.fn=NULL, min.mut.af=NULL, output.fn.base=NULL, verbose=TRUE)
 
+
+		load(paste("./ABSOLUTE_output/",args[2],".ABSOLUTE.RData",sep=""))
+		original_call_status=seg.dat$mode.res$call.status
+		if( original_call_status !="called"){
+			seg.dat$mode.res$call.status="called" ## temporal_for_review
+			save(seg.dat,  file=paste("./ABSOLUTE_output/",args[2],".ABSOLUTE.RData",sep=""))
+		}
+
 		CreateReviewObject(args[2], paste("./ABSOLUTE_output/",args[2],".ABSOLUTE.RData",sep=""), "./ABSOLUTE_output/CreateReviewObject", "total", verbose=TRUE)
 
 
@@ -99,6 +107,10 @@ while(satisfied < 2){
 		}
 	}
 }
+purity_ploidy_table=read.table(paste("ABSOLUTE_output/output/reviewed/", args[2],".test.ABSOLUTE.table.txt",sep=""), stringsAsFactors=F,sep="\t",header=T)
+purity_ploidy_table[,"call_status"]=original_call_status
+write.table(purity_ploidy_table, paste("ABSOLUTE_output/output/reviewed/", args[2],".test.ABSOLUTE.table.txt",sep=""), quote=F, sep="\t", row.names=F, col.names=T)
+
 
 seg.dat.fn=read.table("copy_numbers_ABSOLUTE_input",header=T ,stringsAsFactors=F);
 seg.dat.fn[segNA,5]=NA;
