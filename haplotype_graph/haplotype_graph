@@ -78,7 +78,7 @@ cp iter$iter\/diploid_haplotype.* InfoGenomeR_output/haplotype
 cat iter$iter\/copy_numbers.CN_opt.ACN.phased  | cut -f1,2,3,28,29 > InfoGenomeR_output/copy_number.CN_opt.phased
 
 #echo -e "Type\tchr1\tbreak1\tchr2\tbreak2\torienation\tbreak1_haplotype_CN1\tbreak1_haplotype_CN2\tbreak2_haplotype_CN1\tbreak2_haplotype_CN2" > InfoGenomeR_output/SVs.CN_opt.phased
-cat iter$iter\/SVs.AS_SV.haplotype_phased  | cut -f2,3,4,5,6,16,17,18,19 | awk -F "\t" '{for(i=6;i<=9;i++){if($i=="NA"){$i=0}}; printf "<SV>\t"; for(i=1;i<=9;i++){if(i!=9){printf "%s\t", $i}else{printf "%s\n", $i}}}' > InfoGenomeR_output/SVs.CN_opt.phased
+cat iter$iter\/SVs.AS_SV.haplotype_phased  | cut -f2,3,4,5,6,16,17,18,19 | awk -F "\t" '{for(i=6;i<=9;i++){if($i=="NA"){$i=0}}; printf "<SV%s>\t", NR; for(i=1;i<=9;i++){if(i!=9){printf "%s\t", $i}else{printf "%s\n", $i}}}' > InfoGenomeR_output/SVs.CN_opt.phased
 cat iter$iter\/ABSOLUTE_output/output/reviewed/*.test.ABSOLUTE.table.txt | awk -F "\t" '{print $4"\t"$5}' > InfoGenomeR_output/purity_ploidy
 echo "Haplotype phasing finished"
 

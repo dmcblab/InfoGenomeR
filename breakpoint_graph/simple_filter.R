@@ -1,3 +1,8 @@
+args=commandArgs(T)
+break_thres=as.numeric(args[1])
+
+
+
 sv=read.table("SVs.CN_opt",stringsAsFactors=F)
 sv=sv[sv$V15!=0,];
 
@@ -56,7 +61,6 @@ sv$V4[sv$V4=="23"]="X";
 
 
 cn=read.table("copy_numbers")
-break_thres=1e5;
 
 sv$class=0;
 

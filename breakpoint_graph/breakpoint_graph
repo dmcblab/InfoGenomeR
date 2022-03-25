@@ -6,6 +6,7 @@ CIGAR="100M";
 read_length=100;
 min_ploidy=1.5
 max_ploidy=5
+simple_length=100000
 sample=sample1
 cancer_type=null
 npe_dir=null
@@ -22,6 +23,11 @@ while [[ $# -gt 0 ]]; do
   case $key in
     -m|--mode)
       mode="$2"
+      shift
+      shift
+      ;;
+    -e|--simple_length)
+      simple_length="$2"
       shift
       shift
       ;;
@@ -81,8 +87,8 @@ while [[ $# -gt 0 ]]; do
       shift
       exit 1
       ;;
-    --stringent)
-      stringent="T"
+    -s|--stringent)
+      stringent="$2"
       shift
       shift
       ;;
@@ -90,6 +96,7 @@ while [[ $# -gt 0 ]]; do
       echo -e "Usage: breakpoint_graph <SVs> <cn_norm> [options]\n"
       echo -e "Options:"
       echo -e  "\t-m, --mode (required)\n \t\t Select the mode (germline, total, somatic, simplification)
+\t-e, --simple_length \n \t\t simplifying SVs shorter than simple_length for the simplification mode (default: 100000)
 \t-i, --lambda_ini (required) \n \t\t Initial lambda for the first round iterations (default: 1)
 \t-f, --lambda_fi (required) \n \t\t Final lambda for the second round iterations (default: 4)
 \t-t, --cancer_type (optional) \n \t\t Cancer type used for ABSOLUTE estimation (BRCA, GBM, OV, ...). If unknown, write null.
@@ -147,6 +154,9 @@ echo "lambda_fi   = ${lambda_fi}"
 echo "cancer_type = ${cancer_type}"
 echo "min_ploidy = ${min_ploidy}"
 echo "max_ploidy = ${max_ploidy}"
+if [[ ${mode} == "simplification" ]];then
+	echo "simple_length = ${simple_length}"
+fi
 
 if [[ -s $npe_dir\/NPE.fq1 ]] && [[ -s $npe_dir\/NPE.fq2 ]];then
 	echo "NP reads mapping = True"
@@ -286,15 +296,15 @@ else
 	while [[ $sv_lines -ne $new_sv_lines ]];do
 		sv_lines=`cat SVs | wc -l`
 		if [[ $stringent == "T" ]];then
-	    		$library/breakpoint_graph_simple_SVs $bin -m $mode -f $lambda_fi -t $cancer_type -n $min_ploidy -x $max_ploidy -c $normal_bin -o $PWD --stringent
+	    		$library/breakpoint_graph_simple_SVs $bin -m $mode -f $lambda_fi -t $cancer_type -n $min_ploidy -x $max_ploidy -c $normal_bin -o $PWD -e $simple_length --stringent $stringent
 		else
-			$library/breakpoint_graph_simple_SVs $bin -m $mode -f $lambda_fi -t $cancer_type -n $min_ploidy -x $max_ploidy -c $normal_bin -o $PWD
+			$library/breakpoint_graph_simple_SVs $bin -m $mode -f $lambda_fi -t $cancer_type -n $min_ploidy -x $max_ploidy -c $normal_bin -o $PWD -e $simple_length
 		fi
                 if [[ $stringent == "T" ]];then
 
-			$library/breakpoint_graph_block_clusters $bin -m $mode -f $lambda_fi -t $cancer_type -n $min_ploidy -x $max_ploidy -c $normal_bin -o $PWD --stringent
+			$library/breakpoint_graph_block_clusters $bin -m $mode -f $lambda_fi -t $cancer_type -n $min_ploidy -x $max_ploidy -c $normal_bin -o $PWD -e $simple_length --stringent stringent
 		else
-			 $library/breakpoint_graph_block_clusters $bin -m $mode -f $lambda_fi -t $cancer_type -n $min_ploidy -x $max_ploidy -c $normal_bin -o $PWD
+			 $library/breakpoint_graph_block_clusters $bin -m $mode -f $lambda_fi -t $cancer_type -n $min_ploidy -x $max_ploidy -c $normal_bin -o $PWD -e $simple_length
 
 		fi
 		new_sv_lines=`cat SVs | wc -l`

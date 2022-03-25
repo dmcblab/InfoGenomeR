@@ -1,4 +1,6 @@
 args=commandArgs(T);
+tag=args[1]
+svf=read.table("../../SVs.CN_opt.phased")
 
 library(plotrix)
 draw.half.circle=function (x, y, radius, nv = 100, border = NULL, col = NA, lty = 1,
@@ -172,7 +174,7 @@ while(wi <=length(path)){
 
 
 	if(chr_coor=="der"){
-		print(i)
+		#print(i)
 	}
 
         j=2;
@@ -276,6 +278,7 @@ while(wi <=length(path)){
         seg_color=list()
         s_i=1
         sv_coor=list()
+	sv_coor_name=list()
         v_i=1
 
 	wi=wi+1;
@@ -309,7 +312,7 @@ while(wi <=length(path)){
 
 
                 }else{	
-			print(nodeidx[[1]]);
+			#print(nodeidx[[1]]);
 			cent_coor1=max(cent[cent[,1]==chr,2],   d[d$node==min(nodeidx[[1]]),2] );
 			cent_coor2=min(cent[cent[,1]==chr,3],   d[d$node==max(nodeidx[[1]]),2] );
 			if(nodeidx[[1]][1] < nodeidx[[1]][2]){
@@ -347,8 +350,28 @@ while(wi <=length(path)){
 
 #		grid.roundrect(x_start/xmax+0.05, (y_start+chrlength/2 )/ymax, 0.01, chrlength/ymax, gp = gpar(fill=chr_color[chr_color$chrom==d[d$node==max(nodeidx[[1]]),1],2] ), r=0);
 		if(j!=2){
-			if(abs (as.numeric(prev_nodeidx[[1]][2]) - as.numeric(nodeidx[[1]][1])) !=1){
+			is_sv=F
+			is_sv_c=as.numeric(c(prev_nodeidx[[1]][1], prev_nodeidx[[1]][2], nodeidx[[1]][1] , nodeidx[[1]][2]))
+			ref_c=c(is_sv_c[1]:is_sv_c[4])
+#			print(is_sv_c)
+#			print("h")
+#			print(ref_c)
+			if(length(ref_c) == 4 && all(is_sv_c == ref_c)){
+				is_sv=F
+			}else{
+				is_sv=T
+			}
+			if(is_sv){
+#			if(abs (as.numeric(prev_nodeidx[[1]][2]) - as.numeric(nodeidx[[1]][1])) !=1){
 				sv_coor[[v_i]]=c(x_start,y_start,x_start+1, y_start)
+				svf_chr1=d[d$node==nodeidx[[1]][1],1]
+				coor1=d[d$node==nodeidx[[1]][1],2]
+				svf_chr2=d[d$node==prev_nodeidx[[1]][2],1]
+				coor2=d[d$node==prev_nodeidx[[1]][2],2]
+
+				svf_name1=svf[(svf[,2]==svf_chr1 & svf[,3]==coor1 & svf[,4]==svf_chr2 & svf[,5]==coor2) | (svf[,4]==svf_chr1 & svf[,5]==coor1 & svf[,2]==svf_chr2 & svf[,3]==coor2),1]
+#				print(svf_name1)
+				sv_coor_name[[v_i]]=svf_name1
 				v_i=v_i+1
 			}
 		}
@@ -375,7 +398,11 @@ while(wi <=length(path)){
 
 	if(length(sv_coor)>0){
 	for(l in 1:length(sv_coor)){
-		segments(sv_coor[[l]][1], sv_coor[[l]][2], sv_coor[[l]][3], sv_coor[[l]][4], lwd=1)
+		segments(sv_coor[[l]][1], sv_coor[[l]][2], sv_coor[[l]][3], sv_coor[[l]][4], lwd=2)
+		if(!is.na(tag) && tag=="tag"){
+			text(sv_coor[[l]][1]-1, sv_coor[[l]][2], sv_coor_name[[l]])
+		}
+
 	}
 	}
 
