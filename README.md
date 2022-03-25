@@ -95,6 +95,8 @@ Usage: breakpoint_graph <SVs> <cn_norm> [options]
 Options:
         -m, --mode (required)
                  Select the mode (germline, total, somatic, simplification)
+        -e, --simple_length
+                 simplifying SVs shorter than simple_length for the simplification mode (default: 100000)
         -i, --lambda_ini (required)
                  Initial lambda for the first round iterations (default: 1)
         -f, --lambda_fi (required)
@@ -113,7 +115,7 @@ Options:
                  Directory that contains copy number bins from a control genome.
         -s, --germ_LocSeq_result (required for somatic mode)
                  Local segmentation results from a control genome.
-        --stringent
+        -s, --stringent
                  stringent condition for low-confidence regions (default: F). turn off if the graph simplification will be applied.
         -o, --out_dir
                  If it already exists, results are overlaid (default: InfoGenomeR_job)
@@ -256,7 +258,7 @@ cp germline_job/copy_numbers ./copy_numbers.control
 ## Merge SV calls.
 cat delly.format manta.format novobreak.format > SVs
 ## breakpoint graph construction
-breakpoint_graph -m somatic -d ./ SVs ./cp_norm -g /home/dmcblab/GRCh37/GRCh37 -c cp_norm_germ -s copy_numbers.control -o somatic_job --stringent
+breakpoint_graph -m somatic -d ./ SVs ./cp_norm -g /home/dmcblab/GRCh37/GRCh37 -c cp_norm_germ -s copy_numbers.control -o somatic_job --stringent T
 ## allele graph construction
 allele_graph -m somatic -s copy_numbers.control hom_snps.format het_snps.format -o somatic_job -g /home/dmcblab/GRCh37/GRCh37 -t 23
 ## haplotype graph construction
@@ -295,7 +297,7 @@ precision:0.937500 recall:0.532710 fmeasure: 0.679380
 ## Merge SV calls.
 cat delly.format manta.format novobreak.format > SVs
 ## breakpoint graph construction
-breakpoint_graph -m somatic -d ./ SVs ./cp_norm -g /home/dmcblab/GRCh38/GRCh38 -c cp_norm_germ -s copy_numbers.control -o somatic_job --stringent
+breakpoint_graph -m somatic -d ./ SVs ./cp_norm -g /home/dmcblab/GRCh38/GRCh38 -c cp_norm_germ -s copy_numbers.control -o somatic_job --stringent T
 ## allele graph construction
 allele_graph -m somatic -s copy_numbers.control hom_snps.format het_snps.format -o somatic_job -g /home/dmcblab/GRCh38/GRCh38 -t 23
 ## haplotype graph construction

@@ -1,5 +1,6 @@
 args=c();
 args=commandArgs(T)
+break_thres=as.numeric(args[3])
 cyto=read.table(args[2],stringsAsFactors=F)
 cyto[,2] = cyto[,2] - 1e6;
 cyto[,3] = cyto[,3] + 1e6;
@@ -35,7 +36,7 @@ if(args[1]=="T"){
 ##cn=cn[cn[,2]==5,]
 
 for(i in 1:nrow(cn)){
-	if(cn[i,3]-cn[i,2]>1e5){
+	if(cn[i,3]-cn[i,2]>break_thres){
 		next;
 	}
 	which_SV1_f=which(sv$V2==cn[i,1]  & sv$V3==cn[i,2] & sv$ori1==5);
