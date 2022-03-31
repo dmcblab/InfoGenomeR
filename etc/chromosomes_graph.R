@@ -53,15 +53,20 @@ for( i in c(1:12,16:20,"X")){
 	}
 }
 for( i in c(13,14,15,21,22)){
+	w1=min(t[t[,1]==i,2])
         w2=max(t[t[,1]==i,2])
-        if(length(c(w2)) !=0){
+        if(length(c(w1,w2)) !=0){
+                tel=c(tel,t[  t[,1]== i & t[,2] == w1, 3]);
                 tel=c(tel,t[  t[,1]== i & t[,2] == w2, 3]);
+                t[  t[,1]== i & t[,2] == w1,"key"]=1
+
         }
 }
 
 tel=t[t[,3] %in% unique(tel),3];
 
 
+node_keys=t
 
 
 t=read.table(paste(Sys.getenv("InfoGenomeR_lib"),"/humandb/",Sys.getenv("Ref_version"),"_cytoBand.txt",sep=""))
@@ -93,7 +98,10 @@ chr_color=data.frame(chrom=c(1:22,"X"),color=c("#5C575F","#774697","#3153A8","#7
 
 
 
-d=read.table("node_keys",stringsAsFactors=F)
+#d=read.table("node_keys",stringsAsFactors=F)
+
+d=node_keys
+
 i=1
 while(i<(nrow(d)-1)){
         if(d[i,1] ==d[i+2,1] && d[i,4] == d[i+2,4] && (d[i+1,2]+1) != d[i+2,2]){
@@ -197,11 +205,11 @@ while(wi <=length(path)){
 			}else{
 				ter="qter"
 			}
-			if(j==2){
+#			if(j==2){
 				text(x_start+0.5, y_start-25000000, ter);
-			}else{
-                                text(x_start+0.5, y_start+25000000, ter);
-			}
+#			}else{
+ #                               text(x_start+0.5, y_start+25000000, ter);
+#			}
                 }
                 if(nodeidx[[1]][2] %in% tel){
                        draw.half.circle(x_start+0.5,y_start+chrlength,radius=0.5, col=chr_color[chr_color$chrom==d[d$node==max(nodeidx[[1]]),1],2], border=NA,side="upper")
@@ -210,11 +218,11 @@ while(wi <=length(path)){
                         }else{
                                 ter="qter"
                         }
-                        if(j==2){
-                                text(x_start+0.5, y_start+chrlength-25000000,ter);
-                        }else{
+#                        if(j==2){
+#                                text(x_start+0.5, y_start+chrlength-25000000,ter);
+#                        }else{
                                 text(x_start+0.5, y_start+chrlength+25000000, ter);
-                        }
+ #                       }
                 }
 
                 y_start=y_start+chrlength;
