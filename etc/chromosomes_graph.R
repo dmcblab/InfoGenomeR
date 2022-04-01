@@ -1,6 +1,7 @@
 args=commandArgs(T);
 tag=args[1]
 svf=read.table("../../SVs.CN_opt.phased")
+min_chr_length=2000000
 
 library(plotrix)
 draw.half.circle=function (x, y, radius, nv = 100, border = NULL, col = NA, lty = 1,
@@ -42,6 +43,8 @@ while(i<(nrow(t)-1)){
 	i=i+2
 }
 chr=unique(t[,1])
+
+d_origin=t
 
 tel=c();
 for( i in c(1:12,16:20,"X")){
@@ -150,6 +153,7 @@ for(lchr_i in 1:nrow(lchr_start)){
 
 
 wi=1
+path_l=c()
 while(wi <=length(path)){
 	chr_per=data.frame(chr=c(ochr,"der"), length=rep(0,length(ochr)+1))
 #        chr_per=data.frame(chr=c(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,"X","der"), length=rep(0,24))
@@ -159,8 +163,8 @@ while(wi <=length(path)){
         j=2
         while(j<length(f[[1]])){
                 nodeidx=strsplit(f[[1]][j],split="-")
-                chrlength=d[d$node==max(nodeidx[[1]]),2]-d[d$node==min(nodeidx[[1]]),2]
-                chr=as.character(d[d$node==max(nodeidx[[1]]),1]);
+                chrlength=d_origin[d_origin$node==max(nodeidx[[1]]),2]-d_origin[d_origin$node==min(nodeidx[[1]]),2]
+                chr=as.character(d_origin[d_origin$node==max(nodeidx[[1]]),1]);
                 chr_per[chr_per$chr==chr,2]=chr_per[chr_per$chr==chr,2]+chrlength;
                 j=j+2;
                 length_sum=length_sum+chrlength;
@@ -174,10 +178,12 @@ while(wi <=length(path)){
         }
 
 
-	wi=wi+1
-        if(length_sum<2000000){
+        if(length_sum<min_chr_length){
+		path_l[wi]=length_sum
+		wi=wi+1
                 next;
         }
+	wi=wi+1
 
 
 
@@ -231,7 +237,7 @@ while(wi <=length(path)){
                 prev_nodeidx=nodeidx;
 
         }
-       if(!(length_sum<2000000)){
+       if(!(length_sum<min_chr_length)){
 
                 i=i+1;
                 chr_start[chr_start$chr==chr_coor,2]=chr_start[chr_start$chr==chr_coor,2]+2;
@@ -261,8 +267,8 @@ while(wi <=length(path)){
 	j=2
         while(j<length(f[[1]])){
                 nodeidx=strsplit(f[[1]][j],split="-")
-                chrlength=d[d$node==max(nodeidx[[1]]),2]-d[d$node==min(nodeidx[[1]]),2]
-                chr=as.character(d[d$node==max(nodeidx[[1]]),1]);
+                chrlength=d_origin[d_origin$node==max(nodeidx[[1]]),2]-d_origin[d_origin$node==min(nodeidx[[1]]),2]
+                chr=as.character(d_origin[d_origin$node==max(nodeidx[[1]]),1]);
                 chr_per[chr_per$chr==chr,2]=chr_per[chr_per$chr==chr,2]+chrlength;
                 j=j+2;
 		length_sum=length_sum+chrlength;
@@ -290,7 +296,7 @@ while(wi <=length(path)){
         v_i=1
 
 	wi=wi+1;
-	if(length_sum<2000000){
+	if(length_sum<min_chr_length){
 #		i=i+1;
 #		chr_start[chr_start$chr==chr_coor,2]=chr_start[chr_start$chr==chr_coor,2]+2;
 		next;
@@ -414,7 +420,7 @@ while(wi <=length(path)){
 	}
 	}
 
-       if(!(length_sum<2000000)){
+       if(!(length_sum<min_chr_length)){
 		i=i+1;
 		chr_start[chr_start$chr==chr_coor,2]=chr_start[chr_start$chr==chr_coor,2]+2;
 
