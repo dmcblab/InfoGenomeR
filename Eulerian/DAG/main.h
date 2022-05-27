@@ -573,7 +573,7 @@ class DAG
 							        newNode->SVs_Ns.push_back(0);
 								newNode->SVs_CNs.push_back(0);
 							}
-
+							i++;
 						}else{
 							int sod_start;
 							int sod_end;
