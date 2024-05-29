@@ -1,0 +1,33 @@
+wildcard_constraints:
+
+rule all:
+
+rule InfoGenomeR_env:
+        conda:
+                "envs/InfoGenomeR.yaml"
+        shell:
+                "workflow/scripts/InfoGenomeR_env.sh"
+
+
+rule bwa_mapping:
+        input:
+                ref="{root}/ref/hg19.fa",
+                fastq_dir="{root}/fastq",
+        output:
+                bam_dir=directory("{root}/bam")
+        conda:
+                "envs/InfoGenomeR.yaml"
+        shell:
+                "workflow/scripts/bwa_mapping.sh {input.fastq_dir} {input.ref} {output.bam_dir}"
+
+rule bam_processing:
+        input:  
+                ref="{root}/ref/hg19.fa",
+                bam_dir="{root}/bam",
+                exclude_tsv=Path(workflow.basedir) / "../humandb/human.hg19.excl.tsv"
+        output: 
+                preprocess_dir=directory("{root}/preprocess")
+        conda:  
+                "envs/InfoGenomeR.yaml"
+        shell:  
+                "workflow/scripts/bam_preprocessing.sh {input.bam_dir} {input.ref} {output.preprocess_dir} {input.exclude_tsv}"

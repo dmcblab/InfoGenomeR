@@ -1,58 +1,53 @@
 #!/bin/bash
-lib=`dirname $(readlink -f ${BASH_SOURCE[0]})`
 
 cleanup() {
-	pkill -P $$
-	kill 0
+        pkill -P $$
+        kill 0
 }
 
 for sig in INT QUIT HUP TERM; do
-	trap "
-	    cleanup
+        trap "
+            cleanup
             trap - $sig EXIT
             kill -s $sig "'"$$"' "$sig"
 done
 
-# trap cleanup EXIT
 
-tumor_bam=$1
-normal_bam=$2
+mode=$1
+bam=$2
 ref=$3
-PE_thres=$4
-MAPQ_thres=$5
+exclude_tsv=$4
+PE_thres=$5
+MAPQ_thres=$6
+
+bcf_prefix="";
+if [[ $mode == "germline" ]];then
+	bcf_prefix="germline"
+fi
 
 idx=0;
+mkdir -p log;
 
-declare -a pids;
-mkdir -p log
-for type in DEL INV DUP TRA;do
-	delly call -t $type -g $ref -o somatic_pre_$type.bcf $tumor_bam $normal_bam &>log/somatic.$type.log &
+for type in DEL DUP INV TRA;do
+	delly call -t $type -g $ref -o $bcf_prefix.$type.bcf $bam  -x $exclude_tsv -q 10 -s 15 -n &>log/$bcf_prefix.$type.log &
 	pids[$idx]=$!;
 	idx=$(($idx+1));
 done
 
-for z in `seq 0 3`;do
-        wait ${pids[$z]};
+
+for pid in ${pids[*]}; do
+        wait $pid;
+done
+
+for type in DEL DUP INV TRA;do
+	bcftools view $bcf_prefix.$type.bcf > $bcf_prefix.$type.vcf
 done
 
 
-bcftools view somatic_pre_DEL.bcf -h | tail -n1 | awk '{print $10"\ttumor"; print $11"\tcontrol"}' > samples.tsv
+for type in DEL DUP INV TRA;do
+                file=$bcf_prefix.$type.vcf
 
-delly filter -t DEL -f somatic -o somatic_DEL.bcf -s samples.tsv somatic_pre_DEL.bcf -a 0 -m 100
-delly filter -t INV -f somatic -o somatic_INV.bcf -s samples.tsv somatic_pre_INV.bcf -a 0 -m 100
-delly filter -t DUP -f somatic -o somatic_DUP.bcf -s samples.tsv somatic_pre_DUP.bcf -a 0 -m 100
-delly filter -t TRA -f somatic -o somatic_TRA.bcf -s samples.tsv somatic_pre_TRA.bcf -a 0 -m 100
-
-for type in DEL INV DUP TRA;do
-	bcftools view somatic_$type.bcf > somatic_$type.vcf
-done
-
-
-for type in DEL INV DUP TRA;
-do
-                tumorID=somatic_$type.vcf
-
-                cat $tumorID | grep -v '#' | awk -F "\t" '{
+                cat $file | awk -F "\t" '{
                                                 n=split($8,f,"SR=");
                                                 if(n>1){
                                                         split(f[2],SR, ";");
@@ -78,13 +73,10 @@ do
                                               split($8, f, "CT=");
                                                 split(f[2], ori, ";");
 
-                                                if($7=="PASS" && (PE[1] > '$PE_thres' && SR_number > -1)&& MAPQ[1] > '$MAPQ_thres'){
+						if($7=="PASS" && (PE[1] > '$PE_thres' && SR_number > -1)&& MAPQ[1] > '$MAPQ_thres'){
                                                         print "<"SVTYPE[1]">""\t"$1"\t"$2"\t"chr2[1]"\t"pos2[1]"\t"ori[1]"\t"PE[1]"\t"SR_number"\t"MAPQ[1]"\t"PE[1]+SR_number"\t0\t0\t1\t1\t"
                                                 }
-                                        }' | awk '{if(($2~/^[1-2]?[0-9]$/ || $2=="X") && ($4~/^[1-2]?[0-9]$/ || $4=="X")) print $0}'  >> delly.format
+                                        }' | awk '{if(($2~/^[1-2]?[0-9]$/ || $2=="X") && ($4~/^[1-2]?[0-9]$/ || $4=="X")) print $0}'  >> $bcf_prefix.filtered.format
 
 done
-
-Rscript $lib/SV_overnoise.R delly.format
-
 

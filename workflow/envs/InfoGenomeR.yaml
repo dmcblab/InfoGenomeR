@@ -1,0 +1,23 @@
+name: InfoGenomeR
+channels:
+        - conda-forge
+        - bioconda
+        - defaults
+dependencies:
+        - perl
+        - perl-bioperl
+        - bwa=0.7.15
+        - samtools
+        - bedtools=2.29.1
+        - r-base =3.6.3
+        - r-lpsolveapi=5.5.2.0.17.7
+        - r-fitdistrplus=1.1.3
+        - r-numDeriv=2016.8.1.1
+        - r-plotrix
+        - ucsc-blat
+        - blast
+        - bicseq2-seg=0.7.2
+        - bicseq2-norm=0.2.4
+        - delly=0.7.6
+        - manta=1.1.0
+        - bcftools
