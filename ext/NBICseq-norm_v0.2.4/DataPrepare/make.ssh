@@ -1,2 +1,0 @@
-#!/bin/sh
-gcc -o PrepPois -Wall -lm -g -O2 *.c

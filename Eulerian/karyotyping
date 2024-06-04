@@ -36,12 +36,16 @@ fi
 
 cd $out_dir
 iter=`ls -l | grep -E 'iter[1-9]?[0-9]?[0-9]$' | awk 'BEGIN{max=0}{split($9,f,"iter"); if(max<f[2]) max=f[2];}END{print max}'`
-mkdir InfoGenomeR_output/karyotypes
+mkdir -p InfoGenomeR_output/karyotypes
 cd iter$iter
 
 
 while read -r -a line;do
-	cd ${line[0]}
+	if [[ -s ${line[0]} ]];then
+		cd ${line[0]}
+	else
+		continue;
+	fi
 
 	all="F"
 	euler_library=$InfoGenomeR_lib/Eulerian/DAG_entropy
@@ -77,4 +81,6 @@ while read -r -a line;do
 
 	cp -r ${line[0]} ../InfoGenomeR_output/karyotypes
 done < euler.list
+
+cp euler.list ../InfoGenomeR_output/karyotypes
 

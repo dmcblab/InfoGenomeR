@@ -1,1 +1,0 @@
-This program assume all the positions (mappability map and the mapped positions of the reads) are 0-based positions (i.e., the first position is 0)
