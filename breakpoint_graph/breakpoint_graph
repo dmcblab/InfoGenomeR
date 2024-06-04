@@ -217,7 +217,6 @@ else
 fi
 
 
-
 SV=SVs
 i=1;
 iter=1;
@@ -231,7 +230,7 @@ if [ $mode == "germline" ];then
 	tmp_folder="$PWD/tmp/"
         Rscript $library/SV_local_CN_segment_wgs_raw.R $SV $i $bin $tmp_folder $bicseq $lambda_ini $bam $chr_prefix;
 	rm -rf tmp;
-	exit 1
+	exit 0
 fi
 
 

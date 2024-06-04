@@ -1,0 +1,51 @@
+In Version 0.1, a faster method is used to calculate the GC content in DtaPrep.c.
+		fixed a bug in printing the expected value
+
+In Version 0.1.1, modified the program to remove the reads near the gap of the genome assembly (BRS program)
+
+In Version 0.1.2, this program can be used to ONLY bin the data
+
+In Version 0.1.3, added perl scripts to remove the temp files generated.
+		  modified BRS program to report the total number of reads on mappable positions and total number of mappable positions.
+		  estimate the bin size used for the refine step
+		  modified the count_nuc function in DtaPrep.c
+		  also modified the function calculate_bias in DtaPrep.c allowing read positions less than fragment size and read length.
+		  changed the default bin type to be bins with equal number uniquely mappable positions
+
+
+In Version 0.1.4, suppressed reporting the ratio between the observed and expected
+
+In Version 0.1.5, provide functions to only bin the data and plot the read count vs gc content
+
+In Version 0.1.6, first iteratively remove the regions that are likely to be CNV regions (use linear regression)
+		  In the earlier version, the last bin was processed differently for the bin only procedure and the prediction procedure;
+		  this is fixed in this version 
+		  In this version, some temp files will not be deleted.
+
+In Version 0.1.6.1, fixed some bug that may cause the program freezing (a bug in read.c)
+		  the output contains more information
+		  Fixed a bug in the code normalized.pl (a bug in checking if the config file has correct information)
+
+In Version 0.1.7, allow to extend the read to upstream and downstream for model training and fitting.
+
+In version 0.1.7.1, Fixed a bug in DtaPrep.c
+		    Only consider nucleotide composition near the start and end of a read
+
+In version 0.1.7.2, removed the function about the gap of the genome assembly (only the perl program)
+		    Fixed a but in compRatio.R to avoid accasional negative prediction
+
+
+In version 0.2, use nonparametric regression instead of polynomial regression (glm step)
+
+
+In version 0.2.1, use nonparametric regression in the refine step
+		  changed pos = pos_in - 1 to pos = pos_in in DtaPrep.c and DtaPrepGAM.c
+                plan to seperate the nonparametric normalization procedure and the parametric procedure as seperate perl pipeline (Didn't work on this yet)
+
+In version 0.2.2, add a function such that the users can choose to not filter the potential CNV regions
+		  removed some unused options, such as gc_mp, gc_log, gc_degree, gconly, gapfile
+		
+In version 0.2.3, add one step in purityEM to remove outliers
+
+
+

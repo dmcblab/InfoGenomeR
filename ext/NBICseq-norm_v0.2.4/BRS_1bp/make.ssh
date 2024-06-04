@@ -1,0 +1,2 @@
+#!/bin/sh
+gcc -Wall -lm -o BRS *.c

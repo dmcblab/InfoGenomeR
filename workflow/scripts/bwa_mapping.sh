@@ -11,6 +11,7 @@ tumor_fq2=$fastq_dir\/tumor2.fq.gz
 normal_fq1=$fastq_dir\/normal1.fq.gz
 normal_fq2=$fastq_dir\/normal2.fq.gz
 
+
 mkdir -p $out_dir
 
 

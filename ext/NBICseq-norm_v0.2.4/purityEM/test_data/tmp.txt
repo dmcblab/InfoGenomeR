@@ -1,0 +1,39 @@
+The ploidy number is 1, i=1, bic is -5791.89
+bic is -5791.89; likelihood is 3001.85; degree of freedom is 23
+alpha	xi	tau	p0	p1	p2	p3	p4	p5	p6	p7	p8	p9	p10	p11	p12	p13	p14	p15	p16	p17	p18	p19	p20
+0.841962	-0.00427951	0.00905466	0.0969141	0.662234	0.00161139	6.75472e-08	7.78723e-08	0.00278103	0.224971	0.000265633	3.05922e-08	6.12283e-11	7.16896e-10	1.42306e-07	3.72789e-05	0.000251283	0.000440219	0.00463814	0.00582062	3.51982e-05	2.28684e-12	2.93107e-25	4.2878e-45
+theta_init->EV=0; theta_pld_bic[1]->EV = 1
+bic is -1308.69; likelihood is 663.552; degree of freedome is 2
+alpha	xi	tau	p0	p1	p2	p3	p4	p5	p6	p7	p8	p9	p10	p11	p12	p13	p14	p15	p16	p17	p18	p19	p20
+1	-0.0118583	0.0506994	0	0	1	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+The ploidy number is 2, i=2, bic is -13666.6
+bic is -13666.6; likelihood is 6870.16; degree of freedom is 8
+alpha	xi	tau	p0	p1	p2	p3	p4	p5
+0.240118	-0.0722124	0.00316763	0.00205007	0.0391387	0.716899	0.229902	0.00141967	0.0105903
+theta_init->EV=0; theta_pld_bic[2]->EV = 1
+bic is -1308.69; likelihood is 663.552; degree of freedome is 2
+alpha	xi	tau	p0	p1	p2	p3	p4	p5
+1	-0.0118583	0.0506994	0	0	1	0	0	0
+The ploidy number is 3, i=3, bic is -13648.2
+bic is -13648.2; likelihood is 6870.16; degree of freedom is 10
+alpha	xi	tau	p0	p1	p2	p3	p4	p5	p6	p7
+0.240118	-0.452153	0.00316763	1.44911e-12	0.00205007	0.0391387	0.716899	0.229902	0.00141967	0.0105902	1.26401e-23
+theta_init->EV=0; theta_pld_bic[3]->EV = 1
+bic is -1308.69; likelihood is 663.552; degree of freedome is 2
+alpha	xi	tau	p0	p1	p2	p3	p4	p5	p6	p7
+1	-0.0118583	0.0506994	0	0	1	0	0	0	0	0
+The ploidy number is 4, i=4, bic is -13779.4
+bic is -13779.4; likelihood is 6954.14; degree of freedom is 14
+alpha	xi	tau	p0	p1	p2	p3	p4	p5	p6	p7	p8	p9	p10	p11
+0.616602	-0.455903	0.0028553	0.0018407	0.000490432	0.0388146	0.000156181	0.71273	0.0118134	0.219729	0.002984	0.000365076	0.00144482	0.0096312	1.22415e-06
+theta_init->EV=0; theta_pld_bic[4]->EV = 1
+bic is -1308.69; likelihood is 663.552; degree of freedome is 2
+alpha	xi	tau	p0	p1	p2	p3	p4	p5	p6	p7	p8	p9	p10	p11
+1	-0.0118583	0.0506994	0	0	1	0	0	0	0	0	0	0	0	0
+minium bic: -13779.4; Corresponding likelihood is 6954.14
+alpha	xi	tau	p0	p1	p2	p3	p4	p5	p6	p7	p8	p9	p10	p11
+0.616602	-0.455903	0.0028553	0.0018407	0.000490432	0.0388146	0.000156181	0.71273	0.0118134	0.219729	0.002984	0.000365076	0.00144482	0.0096312	1.22415e-06
+D=4.44008, omega = 0.148841, pi = 0.279651
+bic is -1308.69; likelihood is663.552
+alpha	xi	tau	p0	p1	p2	p3	p4	p5	p6	p7	p8	p9	p10	p11
+1	-0.0118583	0.0506994	0	0	1	0	0	0	0	0	0	0	0	0
