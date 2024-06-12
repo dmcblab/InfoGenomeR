@@ -1,5 +1,6 @@
+"mode": "somatic"
 "lambda_ini": 16
 "lambda_fi": 2000
 "min_ploidy": 1.5
 "max_ploidy": 5
-"cancer_type": "BRCA"
+"cancer_type": "NA"

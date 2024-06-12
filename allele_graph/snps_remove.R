@@ -1,6 +1,6 @@
 snp=read.table("het_snps.format",stringsAsFactors=F)
 
-t=read.table("exclude", stringsAsFactors=F)
+t=read.table("exclude.bed", stringsAsFactors=F)
 remove=c();
 for(i in 1:nrow(t)){
 	c=which(snp$V1==t[i,1] & snp$V2 < t[i,3] & snp$V2 > t[i,2]);
@@ -17,7 +17,7 @@ write.table(snp,"het_snps.format.filtered", quote=F, col.names=F, row.names=F, s
 
 snp = read.table("hom_snps.format",stringsAsFactors=F);
 
-t=read.table("exclude", stringsAsFactors=F)
+t=read.table("exclude.bed", stringsAsFactors=F)
 remove=c();
 for(i in 1:nrow(t)){
         c=which(snp$V1==t[i,1] & snp$V2 < t[i,3] & snp$V2 > t[i,2]);

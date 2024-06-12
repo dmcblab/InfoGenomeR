@@ -1,14 +1,15 @@
 #!/bin/bash
+unset R_HOME
+mode=$1
+root_dir=`readlink -f $2`
+InfoGenomeR_dir=`readlink -f $3`
+output_dir=`readlink -f $4`
 
-root_dir=`readlink -f $1`
-InfoGenomeR_dir=`readlink -f $2`
-output_dir=`readlink -f $3`
-
-ref=`readlink -f $4`
+ref=`readlink -f $5`
 ref_dir=`dirname $ref`
 ref_prefix=`basename $ref | awk -F "." '{print $1}'`
 
-export Haplotype_path=`readlink -f $5`
+export Haplotype_path=`readlink -f $6`
 
 
 if [[ $ref =~ "hg19" ]];then
@@ -32,5 +33,14 @@ mkdir -p InfoGenomeR_allele_graph_job
 
 cp -r ${InfoGenomeR_dir}/iter$iter InfoGenomeR_allele_graph_job
 
-allele_graph -m somatic -g $ref_dir\/$ref_prefix -o InfoGenomeR_allele_graph_job -t 23 -s germline_job/copy_numbers preprocess/snp/hom_snps.format preprocess/snp/het_snps.format &> log/allele_graph.log
+if [[ -s ${InfoGenomeR_dir}/exclude.bed ]];then
+	cp ${InfoGenomeR_dir}/exclude.bed InfoGenomeR_allele_graph_job
+fi
+
+
+if [[ $mode == "somatic" ]];then
+	allele_graph -m $mode -g $ref_dir\/$ref_prefix -o InfoGenomeR_allele_graph_job -t 23 -s germline_job/copy_numbers preprocess/snp/hom_snps.format preprocess/snp/het_snps.format &> log/allele_graph.log
+else
+        allele_graph -m $mode -g $ref_dir\/$ref_prefix -o InfoGenomeR_allele_graph_job -t 23 preprocess/snp/hom_snps.format preprocess/snp/het_snps.format &> log/allele_graph.log
+fi
 

@@ -311,7 +311,6 @@ else
         bin="$PWD/cn_norm_simple/"
         normal_bin="$PWD/cn_norm_germ_simple/"
 
-
 	iter=`ls -l  | awk '{print $9}'|  grep -P '^iter[1-9][0-9]{0,2}$' | awk 'BEGIN{max=0}{split($1,f,"iter"); if(max<f[2]) max=f[2];}END{print max}'`
 	min_simplifying_iter=`cat itr.log |  grep -P '^iter[1-9][0-9]{0,2}.block_clusters$' |  awk 'BEGIN{min=999}{split($1,f,"iter"); split(f[2],g,".block_clusters"); if(min>g[1]) min=g[1];}END{print min}'`
 	cd iter$iter;
@@ -427,3 +426,7 @@ do
 		break;
 	fi
 done
+
+if [[ $mode == "simplification" ]];then
+	cat iter*/exclude > exclude.bed
+fi

@@ -19,8 +19,10 @@ rule bwa_mapping:
                 bam_dir=directory("{root}/bam")
         conda:
                 "envs/InfoGenomeR.yaml"
+        params: 
+                mode=config["mode"]
         shell:
-                "workflow/scripts/bwa_mapping.sh {input.fastq_dir} {input.ref} {output.bam_dir}"
+                "workflow/scripts/bwa_mapping.sh {params.mode} {input.fastq_dir} {input.ref} {output.bam_dir}"
 
 rule bam_processing:
         input:  
@@ -32,8 +34,10 @@ rule bam_processing:
                 preprocess_dir=directory("{root}/preprocess")
         conda:  
                 "envs/InfoGenomeR.yaml"
+        params: 
+                mode=config["mode"]
         shell:  
-                "workflow/scripts/bam_preprocessing.sh {input.bam_dir} {input.ref} {output.preprocess_dir} {input.exclude_tsv} {input.norm_map}"
+                "workflow/scripts/bam_preprocessing.sh {params.mode} {input.bam_dir} {input.ref} {output.preprocess_dir} {input.exclude_tsv} {input.norm_map}"
 
 rule InfoGenomeR_breakpoint_graph:
         input:  
@@ -45,13 +49,14 @@ rule InfoGenomeR_breakpoint_graph:
         conda:  
                 "envs/InfoGenomeR.yaml"
         params:
+                mode=config["mode"],
                 lambda_ini=config["lambda_ini"],
                 lambda_fi=config["lambda_fi"],
                 min_ploidy=config["min_ploidy"],
                 max_ploidy=config["max_ploidy"],
                 cancer_type=config["cancer_type"]
         shell:  
-                "workflow/scripts/InfoGenomeR_breakpoint.sh {input.root_dir} {input.preprocess_dir} {output.breakpoint_graph_dir} {input.ref} {params.lambda_ini} {params.lambda_fi} {params.min_ploidy} {params.max_ploidy} {params.cancer_type}"
+                "workflow/scripts/InfoGenomeR_breakpoint.sh {params.mode} {input.root_dir} {input.preprocess_dir} {output.breakpoint_graph_dir} {input.ref} {params.lambda_ini} {params.lambda_fi} {params.min_ploidy} {params.max_ploidy} {params.cancer_type}"
 
 rule InfoGenomeR_breakpoint_graph_simplification:
         input:  
@@ -63,13 +68,14 @@ rule InfoGenomeR_breakpoint_graph_simplification:
         conda:  
                 "envs/InfoGenomeR.yaml"
         params:
+                mode=config["mode"],
                 lambda_ini=config["lambda_ini"],
                 lambda_fi=config["lambda_fi"],
                 min_ploidy=config["min_ploidy"],
                 max_ploidy=config["max_ploidy"],
                 cancer_type=config["cancer_type"]
         shell:  
-                "workflow/scripts/InfoGenomeR_breakpoint_simplification.sh {input.root_dir} {input.breakpoint_graph_input_dir} {output.breakpoint_graph_simplification_dir} {input.ref} {params.lambda_ini} {params.lambda_fi} {params.min_ploidy} {params.max_ploidy} {params.cancer_type}"
+                "workflow/scripts/InfoGenomeR_breakpoint_simplification.sh {params.mode} {input.root_dir} {input.breakpoint_graph_input_dir} {output.breakpoint_graph_simplification_dir} {input.ref} {params.lambda_ini} {params.lambda_fi} {params.min_ploidy} {params.max_ploidy} {params.cancer_type}"
 
 
 rule InfoGenomeR_allele_graph:
@@ -83,8 +89,10 @@ rule InfoGenomeR_allele_graph:
                 allele_graph_dir=directory("{root}/InfoGenomeR_allele_graph_job"),
         conda:  
                 "envs/InfoGenomeR.yaml"
+        params: 
+                mode=config["mode"]
         shell:  
-                "workflow/scripts/InfoGenomeR_allele_graph.sh {input.root_dir} {input.breakpoint_graph_input_dir} {output.allele_graph_dir} {input.ref} {input.haplotype_path}"
+                "workflow/scripts/InfoGenomeR_allele_graph.sh {params.mode} {input.root_dir} {input.breakpoint_graph_input_dir} {output.allele_graph_dir} {input.ref} {input.haplotype_path}"
 
 
 rule InfoGenomeR_haplotype_graph:

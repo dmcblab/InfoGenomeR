@@ -47,7 +47,7 @@ for type in DEL INV DUP TRA;do
 	bcftools view somatic_$type.bcf > somatic_$type.vcf
 done
 
-
+echo -n "" > delly.format
 for type in DEL INV DUP TRA;
 do
                 tumorID=somatic_$type.vcf

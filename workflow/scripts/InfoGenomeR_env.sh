@@ -1,5 +1,5 @@
 #!/bin/bash
-
+unset R_HOME
 LIB=`readlink -f ${BASH_SOURCE[0]} | awk '{n=split($1,f,"/"); for(i=1;i<=n-3;i++){printf "%s/", f[i]}}'`
 cd $LIB\/
 R CMD INSTALL ext/ABSOLUTE_1.0.6.tar.gz

@@ -1,4 +1,5 @@
 #!/bin/bash
+lib=`dirname $(readlink -f ${BASH_SOURCE[0]})`
 
 cleanup() {
         pkill -P $$
@@ -23,6 +24,8 @@ MAPQ_thres=$6
 bcf_prefix="";
 if [[ $mode == "germline" ]];then
 	bcf_prefix="germline"
+else
+	bcf_prefix="tumor"
 fi
 
 idx=0;
@@ -43,7 +46,7 @@ for type in DEL DUP INV TRA;do
 	bcftools view $bcf_prefix.$type.bcf > $bcf_prefix.$type.vcf
 done
 
-
+echo -n "" > $bcf_prefix.filtered.format
 for type in DEL DUP INV TRA;do
                 file=$bcf_prefix.$type.vcf
 
@@ -80,3 +83,6 @@ for type in DEL DUP INV TRA;do
 
 done
 
+if [[ mode != "germline" ]];then
+	ln -s $bcf_prefix.filtered.format delly.format
+fi

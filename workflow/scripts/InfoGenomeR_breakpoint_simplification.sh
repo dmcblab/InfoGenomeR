@@ -1,18 +1,19 @@
 #!/bin/bash
+unset R_HOME
+mode=$1
+root_dir=`readlink -f $2`
+InfoGenomeR_dir=`readlink -f $3`
+output_dir=`readlink -f $4`
 
-root_dir=`readlink -f $1`
-InfoGenomeR_dir=`readlink -f $2`
-output_dir=`readlink -f $3`
-
-ref=`readlink -f $4`
+ref=`readlink -f $5`
 ref_dir=`dirname $ref`
 ref_prefix=`basename $ref | awk -F "." '{print $1}'`
 
-lambda_ini=$5
-lambda_fi=$6
-min_ploidy=$7
-max_ploidy=$8
-cancer_type=$9
+lambda_ini=$6
+lambda_fi=$7
+min_ploidy=$8
+max_ploidy=$9
+cancer_type="${10}"
 
 
 
@@ -37,11 +38,13 @@ mkdir -p InfoGenomeR_simplification_job
 cp -r ${InfoGenomeR_dir}/iter$iter InfoGenomeR_simplification_job
 cp ${InfoGenomeR_dir}/SVs InfoGenomeR_simplification_job
 ln -s ${InfoGenomeR_dir}/cn_norm InfoGenomeR_simplification_job/cn_norm
-ln -s ${InfoGenomeR_dir}/cn_norm_germ InfoGenomeR_simplification_job/cn_norm_germ
 
 
+if [[ $mode == "somatic" ]];then
+	ln -s ${InfoGenomeR_dir}/cn_norm_germ InfoGenomeR_simplification_job/cn_norm_germ
+	breakpoint_graph -m simplification -o InfoGenomeR_simplification_job  -t "$cancer_type" -i $lambda_ini -f $lambda_fi -n $min_ploidy -x $max_ploidy InfoGenomeR_simplification_job/SVs InfoGenomeR_simplification_job/cn_norm -g $ref_dir\/$ref_prefix -c InfoGenomeR_simplification_job/cn_norm_germ -s germline_job/copy_numbers &>  log/simplification.log
+else
+       breakpoint_graph -m simplification -o InfoGenomeR_simplification_job  -t "$cancer_type" -i $lambda_ini -f $lambda_fi -n $min_ploidy -x $max_ploidy InfoGenomeR_simplification_job/SVs InfoGenomeR_simplification_job/cn_norm -g $ref_dir\/$ref_prefix  &>  log/simplification.log
+fi
 
-breakpoint_graph -m simplification -o InfoGenomeR_simplification_job  -t "$cancer_type" -i $lambda_ini -f $lambda_fi -n $min_ploidy -x $max_ploidy InfoGenomeR_simplification_job/SVs InfoGenomeR_simplification_job/cn_norm -g $ref_dir\/$ref_prefix -c InfoGenomeR_simplification_job/cn_norm_germ -s germline_job/copy_numbers &>  log/simplification.log
-
-#log/InfoGenomeR_simplification_job.log
 

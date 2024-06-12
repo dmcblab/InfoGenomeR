@@ -1,5 +1,5 @@
 #!/bin/bash
-
+unset R_HOME
 root_dir=`readlink -f $1`
 InfoGenomeR_dir=`readlink -f $2`
 output_dir=`readlink -f $3`
