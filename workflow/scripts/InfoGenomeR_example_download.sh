@@ -15,6 +15,8 @@ done
 LIB=`readlink -f ${BASH_SOURCE[0]} | awk '{n=split($1,f,"/"); for(i=1;i<=n-3;i++){printf "%s/", f[i]}}'`
 export InfoGenomeR_lib=$LIB
 
+mkdir -p $InfoGenomeR_lib/examples/fastq
+
 cd $InfoGenomeR_lib/examples/fastq
 
 
