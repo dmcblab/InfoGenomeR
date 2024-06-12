@@ -1,12 +1,14 @@
 #!/bin/bash
-reference=hg19.fa
-script1=./manta-1.1.0.centos5_x86_64/bin/configManta.py
-script2=./runWorkflow.py
-normal_bam=normal.bam
-tumor_bam=tumor.bam
+script1=configManta.py
+tumor_bam=$1
+normal_bam=$2
+reference=$3
 
-$script1 --normalBam $normal_bam --tumorBam $tumor_bam --referenceFasta $reference --runDir manta_somatic
-$script2 -m local -j 1 
+mkdir -p log
+$script1 --normalBam $normal_bam --tumorBam $tumor_bam --referenceFasta $reference --runDir manta_somatic &> log/manta_somatic.log
+cd manta_somatic
+./runWorkflow.py -m local -j 8 &>> ../log/manta_somatic.log
+cd ../
 
 
 zcat ./manta_somatic/results/variants/somaticSV.vcf.gz | awk -F "\t" '{
@@ -56,5 +58,5 @@ zcat ./manta_somatic/results/variants/somaticSV.vcf.gz | awk -F "\t" '{
 	}
 
 }' | awk '{
-	print $0"\t0\t0\t0\t0\t0\t0"}'  > manta.format
+	print $0"\t0\t0\t0\t0\t0\t0"}' | awk '{if(($2~/^[1-2]?[0-9]$/ || $2=="X") && ($4~/^[1-2]?[0-9]$/ || $4=="X")) print $0}'  > manta.format
 

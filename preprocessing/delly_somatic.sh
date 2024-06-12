@@ -1,41 +1,58 @@
 #!/bin/bash
+lib=`dirname $(readlink -f ${BASH_SOURCE[0]})`
 
-#echo "Type SRR ID"
-#read tumorIDini
-ref=hg19.fa
-tsv=samples.tsv
-tumor_bam=tumor.bam
-normal_bam=normal.bam
+cleanup() {
+	pkill -P $$
+	kill 0
+}
 
-delly_v0.7.6 call -t DEL -g $ref -o somatic_pre_DEL.bcf $tumor_bam $normal_bam
-delly_v0.7.6 filter -t DEL -f somatic -o somatic_DEL.bcf -s samples.tsv somatic_pre_DEL.bcf -a 0 -m 100
-delly_v0.7.6 call -t INV -g $ref -o somatic_pre_INV.bcf $tumor_bam $normal_bam
-delly_v0.7.6 filter -t INV -f somatic -o somatic_INV.bcf -s samples.tsv somatic_pre_INV.bcf -a 0 -m 100
-delly_v0.7.6 call -t DUP -g $ref -o somatic_pre_DUP.bcf $tumor_bam $normal_bam
-delly_v0.7.6 filter -t DUP -f somatic -o somatic_DUP.bcf -s samples.tsv somatic_pre_DUP.bcf -a 0 -m 100
-delly_v0.7.6 call -t TRA -g $ref -o somatic_pre_TRA.bcf $tumor_bam $normal_bam 
-delly_v0.7.6 filter -t TRA -f somatic -o somatic_TRA.bcf -s samples.tsv somatic_pre_TRA.bcf -a 0 -m 100
+for sig in INT QUIT HUP TERM; do
+	trap "
+	    cleanup
+            trap - $sig EXIT
+            kill -s $sig "'"$$"' "$sig"
+done
 
-PE_thres=$1
-MAPQ_thres=$2
-#lib=$2
+# trap cleanup EXIT
 
-for i in {1..4}
+tumor_bam=$1
+normal_bam=$2
+ref=$3
+PE_thres=$4
+MAPQ_thres=$5
+
+idx=0;
+
+declare -a pids;
+mkdir -p log
+for type in DEL INV DUP TRA;do
+	delly call -t $type -g $ref -o somatic_pre_$type.bcf $tumor_bam $normal_bam &>log/somatic.$type.log &
+	pids[$idx]=$!;
+	idx=$(($idx+1));
+done
+
+for z in `seq 0 3`;do
+        wait ${pids[$z]};
+done
+
+
+bcftools view somatic_pre_DEL.bcf -h | tail -n1 | awk '{print $10"\ttumor"; print $11"\tcontrol"}' > samples.tsv
+
+delly filter -t DEL -f somatic -o somatic_DEL.bcf -s samples.tsv somatic_pre_DEL.bcf -a 0 -m 100
+delly filter -t INV -f somatic -o somatic_INV.bcf -s samples.tsv somatic_pre_INV.bcf -a 0 -m 100
+delly filter -t DUP -f somatic -o somatic_DUP.bcf -s samples.tsv somatic_pre_DUP.bcf -a 0 -m 100
+delly filter -t TRA -f somatic -o somatic_TRA.bcf -s samples.tsv somatic_pre_TRA.bcf -a 0 -m 100
+
+for type in DEL INV DUP TRA;do
+	bcftools view somatic_$type.bcf > somatic_$type.vcf
+done
+
+echo -n "" > delly.format
+for type in DEL INV DUP TRA;
 do
-        if [ $i == 1 ]
-        then
-                tumorID=somatic_DEL.vcf
-        elif [ $i == 2 ]
-        then
-                tumorID=somatic_INV.vcf
-        elif [ $i == 3 ]
-        then
-                tumorID=somatic_DUP.vcf
-        else
-                tumorID=somatic_TRA.vcf
-        fi
+                tumorID=somatic_$type.vcf
 
-                cat $tumorID | awk -F "\t" '{
+                cat $tumorID | grep -v '#' | awk -F "\t" '{
                                                 n=split($8,f,"SR=");
                                                 if(n>1){
                                                         split(f[2],SR, ";");
@@ -68,6 +85,6 @@ do
 
 done
 
-#Rscript $lib/SV_overnoise.R delly.format
+Rscript $lib/SV_overnoise.R delly.format
 
 

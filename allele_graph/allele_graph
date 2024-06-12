@@ -111,28 +111,32 @@ fi
 cd $out_dir
 iter=`ls -l | grep -E 'iter[1-9]?[0-9]?[0-9]$' | awk 'BEGIN{max=0}{split($9,f,"iter"); if(max<f[2]) max=f[2];}END{print max}'`
 
-echo -n "" > exclude
+if [[ -s exclude.bed ]];then
+       echo "exclude.bed from simplification job"
+else
+	echo -n "" > exclude.bed
+fi
 if [[ $mode == "somatic" ]];then
-        cat $germ_LocSeq_result | awk '{if($6 < -0.5 || $6 > 0.3 ) print $2"\t"$3"\t"$4}' > exclude
+        cat $germ_LocSeq_result | awk '{if($6 < -0.5 || $6 > 0.3 ) print $2"\t"$3"\t"$4}' >> exclude.bed
 fi
 
-final_iter=$(($iter -1 ));
+#final_iter=$(($iter -1 ));
 
-for i in `seq 1 $final_iter`;do
-        if [[ -s iter$i\/exclude ]];then
-                cat iter$i\/exclude >> exclude
-        fi
-done
+#for i in `seq 1 $final_iter`;do
+#        if [[ -s iter$i\/exclude ]];then
+#                cat iter$i\/exclude >> exclude
+#        fi
+#done
 
 cd iter$iter
 echo "tagging homologous recombinations..."
 $library/HR_tag $library $ref;
 
-cp ../exclude ./
+cp ../exclude.bed ./
 cp $hom ./hom_snps.format
 cp $het ./het_snps.format
 echo "ACN estimation..."
-if [[ -s exclude ]];then
+if [[ -s exclude.bed ]];then
 	Rscript $library/snps_remove.R
 	$library/ACN_estimation $library T $haplotype_path $thread
 else
@@ -140,7 +144,11 @@ else
 fi
 
 echo "Imbalanced SNPs phasing..."
-Rscript $library/SNP_phasing_decision_boundary_ver_with_homozygous.R $haplotype_path
+if [[ -s het_snps.format.filtered ]];then
+	Rscript $library/SNP_phasing_decision_boundary_ver_with_homozygous.R $haplotype_path T
+else
+        Rscript $library/SNP_phasing_decision_boundary_ver_with_homozygous.R $haplotype_path F
+fi
 echo "genotype formatting..."
 Rscript $library/genotype_format_for_popul_phasing.R  $haplotype_path
 echo "Allele-specific graph construction is finished"

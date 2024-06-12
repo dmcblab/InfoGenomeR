@@ -23,7 +23,6 @@ min_seg_length=1e3;
 min_log_diff=0;
 min_marker=0;
 bicseq_bin_size=100;
-library(DNAcopy)
 
 germ_remove<-function(x){
         j=2;

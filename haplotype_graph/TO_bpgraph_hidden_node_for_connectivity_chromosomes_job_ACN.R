@@ -1,4 +1,5 @@
 args=commandArgs(T)
+options(warn=-1)
 t=read.table("SVs.AS_SV.haplotype_phased", stringsAsFactors=F)
 ochr=c(1:22, "X");
 chr=c();

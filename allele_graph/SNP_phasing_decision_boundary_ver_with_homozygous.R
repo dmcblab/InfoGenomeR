@@ -1,9 +1,17 @@
 args=commandArgs(T)
+prefiltered=args[2]
 #SNP=read.table("SNP.format", stringsAsFactors=F)
-SNP=read.table("het_snps.format.filtered",stringsAsFactors=F);
-SNP=cbind(SNP,V10=NA, V11=NA, V12=NA);
+if(prefiltered=="T"){
+        SNP=read.table("het_snps.format.filtered", stringsAsFactors=F)
+	SNP_hom = read.table("hom_snps.format.filtered", stringsAsFactors=F);
+}else{  
+        SNP=read.table("het_snps.format", stringsAsFactors=F)
+	SNP_hom = read.table("hom_snps.format", stringsAsFactors=F);
+}
 
-SNP_hom = read.table("hom_snps.format.filtered", stringsAsFactors=F);
+
+SNP=cbind(SNP,V10=NA, V11=NA, V12=NA);
+#SNP_hom = read.table("hom_snps.format.filtered", stringsAsFactors=F);
 SNP_hom = cbind(SNP_hom, V10=NA, V11=NA, V12=NA);
 CN_ACN=read.table("copy_numbers.CN_opt.ACN", header=T,  stringsAsFactors=F)
 SNP_phased=data.frame()

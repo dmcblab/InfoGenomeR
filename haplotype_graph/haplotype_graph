@@ -43,6 +43,14 @@ if [[ ! -s ${haplotype_path} ]];then
         exit 1
 fi
 thread=`echo $thread | awk '{if($1>23){print 23}else{print $1}}'`
+
+max_mem=`free | awk '/Mem\:/ { print $2 }'`
+max_thread=`echo $max_mem | awk '{print int($1/40000000)}'`
+if [[ $thread -gt $max_thread ]];then
+	thread=$max_thread
+fi
+
+
 echo "thread = ${thread}"
 if [[ ! -s $out_dir ]];then
         echo "The output directory of allele graph construction is not found."

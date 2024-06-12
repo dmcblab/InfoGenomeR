@@ -9,7 +9,7 @@ min_seg_length=1e3;
 min_log_diff=0;
 min_marker=0;
 bicseq_bin_size=100;
-library(DNAcopy)
+#library(DNAcopy)
 
 my.merge<-function(x){
 	i<-1
