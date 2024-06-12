@@ -10,6 +10,22 @@ rule InfoGenomeR_env:
         shell:
                 "workflow/scripts/InfoGenomeR_env.sh"
 
+rule InfoGenomeR_example_download:
+        conda:  
+                "envs/InfoGenomeR.yaml"
+        shell:  
+                "workflow/scripts/InfoGenomeR_example_download.sh"
+
+
+rule InfoGenomeR_download:
+        output:
+                default_repeatmasker=Path(workflow.basedir) / "../humandb/GRCh37.repeatmasker",
+                default_cnv_mappability=directory(Path(workflow.basedir) / "../humandb/hg19.CRG.50bp"),
+                default_haplotype=directory(Path(workflow.basedir) / "../humandb/haplotype_1000G")
+        conda:
+                "envs/InfoGenomeR.yaml"
+        shell:
+                "workflow/scripts/InfoGenomeR_download.sh"
 
 rule bwa_mapping:
         input:

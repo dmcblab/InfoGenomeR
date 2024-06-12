@@ -17,11 +17,22 @@ export InfoGenomeR_lib=$LIB
 
 cd $InfoGenomeR_lib/humandb
 
-wget https://zenodo.org/record/5105505/files/haplotype_1000G.tar.xz && tar -xvf haplotype_1000G.tar.xz &
-pids[0]=$!;
+idx=0;
 
-tar -xvf hg19.CRG.50bp.tar.gz &
-pids[1]=$!;
+if [[ ! -s hg19.CRG.50bp ]];then
+	tar -xvf hg19.CRG.50bp.tar.gz 
+fi
+
+if [[ ! -s GRCh37.repeatmasker ]];then
+	zcat GRCh37.repeatmasker.gz > GRCh37.repeatmasker 
+fi
+
+if [[ ! -s haplotype_1000G ]];then
+        wget -N https://zenodo.org/record/5105505/files/haplotype_1000G.tar.xz && tar -xvf haplotype_1000G.tar.xz
+fi
 
 
-
+if [[ ! -s ref ]];then
+        wget -N https://zenodo.org/records/11561156/files/ref.tar.gz
+        tar -xvf ref.tar.gz
+fi
