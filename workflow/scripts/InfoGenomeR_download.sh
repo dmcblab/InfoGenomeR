@@ -20,10 +20,12 @@ cd $InfoGenomeR_lib/humandb
 idx=0;
 
 if [[ ! -s hg19.CRG.50bp ]];then
+	wget -N https://zenodo.org/records/11607705/files/hg19.CRG.50bp.tar.gz
 	tar -xvf hg19.CRG.50bp.tar.gz 
 fi
 
 if [[ ! -s GRCh37.repeatmasker ]];then
+	wget -N https://zenodo.org/records/11607705/files/GRCh37.repeatmasker.gz
 	zcat GRCh37.repeatmasker.gz > GRCh37.repeatmasker 
 fi
 
