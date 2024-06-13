@@ -17,6 +17,16 @@ mamba create -c conda-forge -c bioconda -n snakemake snakemake
 conda config --set channel_priority strict
 conda activate snakemake
 ```
+# InfoGenomeR repository
+```
+git clone https://github.com/dmcblab/InfoGenomeR.git
+InfoGenomeR_repo=${PWD}/InfoGenomeR
+```
+After git clone, follow the steps below.
+- [Conda environment setting](#conda-environment-setting)
+- [Dataset download](#dataset-download)
+- [InfoGenomeR workflow](#infogenomer-workflow)
+
 
 # Conda environment setting
 ```
@@ -28,14 +38,15 @@ snakemake --cores all --use-conda InfoGenomeR_download
 ```
 
 # InfoGenomeR workflow
-Take a low coverage example (~50G)
+Take a low coverage example (~50G). 
+Check the example is working, and then replace example files with yours.
 ```
 snakemake --core all --use-conda InfoGenomeR_example_download
 ```
-## Set a workspace
+## Make a workspace
 ```
-# go to the InfoGenomeR base directory
-cd InfoHiC
+# go to the InfoGenomeR repository.
+cd ${InfoGenomeR_repo}
 
 # make a workspace directory
 workspace_dir=InfoGenomeR_workspace1
@@ -57,15 +68,15 @@ ln -s ${PWD}/examples/fastq ${workspace_dir}/fastq
 Then, go to [InfoGenomeR run](#infogenomer-run)
 ## Starting from bam
 ### Inputs should be located in the workspace 
-Here, the bam folder would be yours, which should be named as below.
+If you start here, the bam folder would be yours, where the bam files should be named as below.
+  - bam/normal_sorted.bam (optional for somatic)
   - bam/tumor_sorted.bam
-  - bam/normal_sorted.bam
 ```
 ln -s bam ${workspace_dir}/bam
 ```
 Then, go to [InfoGenomeR run](#infogenomer-run)
 ## InfoGenomeR run
-Select either somatic or total mode
+Select either somatic (if a matched normal exists) or total (all variants in tumor) mode
 ### Somatic run 
 ```
 # Run the InfoGenomeR workflow. The example is triploidy
