@@ -1,0 +1,77 @@
+Mulitple Myeloma
+GBM
+LUAD
+PRAD
+COAD
+KIRC
+READ
+BRCA
+OV
+LAML
+CESC
+LUSC
+BLCA
+Chronic Lymphocytic Leukemia
+Sarcoma
+Kidney Cancer
+Breast Cancer
+Mesothelioma
+Glioma
+Neuroblastoma
+Endometrial Cancer
+Thyroid Cancer
+Osteosarcoma
+Ewing Sarcoma
+Pediatric Acute lymphoblastic leukemia
+Lung squamous
+Myeloproliferative Disorder
+Esophageal adenocarcinoma
+Pleomorphic Liposarcoma
+Gastric Cancer
+CLL
+Esophageal squamous
+Gastric
+Brain Cancer
+Cervical Cancer
+Lung adenocarcinoma
+Colorectal
+Pediatric GIST
+Lung SCLC
+Lung adenosquamous
+Lung
+Liver Cancer
+Lung Cancer
+Kidney cancer
+Melanoma
+Prostate
+Leiomyosarcoma
+Acute myelogenous leukemia
+Myxoid Liposarcoma
+Ovarian Cancer
+Ovarian
+Chronic lymphocytic leukemia
+Synovial sarcoma
+NSCLC
+Esophageal Cancer
+Pancreatic Cancer
+Rhabdoid Tumor
+Lymphoma
+Bladder Cancer
+Thyroid
+Breast
+Renal Cancer
+Hepatocellular Carcinoma
+Myelodysplasia
+Medulloblastoma
+Prostate Cancer
+Dedifferentiated Liposarcoma
+Colon Cancer
+Multiple Myeloma
+Carcinoid
+Stomach Cancer
+Rectum Cancer
+Rhabdoid
+MFH
+ccRCC
+Head and Neck Cancer
+GIST

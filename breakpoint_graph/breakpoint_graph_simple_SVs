@@ -166,7 +166,11 @@ SV_l1=`cat complex_SV | wc -l`
 SV_l2=`cat SVs | wc -l`
 if [ $SV_l1 -eq $SV_l2 ];then
         cd ../
-        exit 1
+        cp -r $bin cn_norm_simple
+	if [[ $mode == "somatic" ]];then
+		cp -r $normal_bin cn_norm_germ_simple
+	fi
+        exit 0
 fi
 if [ $mode == "somatic" ];then
         Rscript $library/simple_filter_cn_remove.R $bin $normal_bin

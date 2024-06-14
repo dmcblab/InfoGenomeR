@@ -50,6 +50,10 @@ if(prefiltered_or_not=="T"){
         SNP=read.table("het_snps.format", stringsAsFactors=F)
 }
 
+low_coverage=T
+if(mean(SNP[,8]+SNP[,9])>20){
+	low_coverage=F
+}
 
 SNP[SNP[,1]=="X",1]<-23
 
@@ -91,6 +95,10 @@ MAX_DEPTH_multiple=Inf;
 minimum_snp=5;
 min_het_snp_density=1e-5;
 min_nm_p=0.0001;
+if(low_coverage){
+	min_het_snp_density=1e-6;
+	min_nm_p=1e-6;
+}
 min_seg=1e5;
 min_conf_seg=1e6;
 min_probe=100;
@@ -182,6 +190,7 @@ for(CN_i in 1:nrow(CN)){
 		
 ############
 #                if(nrow(t)>=minimum_snp && nrow(t) / (CN[CN_i,"End.bp"] - CN[CN_i,"Start.bp"]) > min_het_snp_density){
+
                 if(nrow(t)>=minimum_snp && p_val > min_nm_p && nrow(t) < CN[CN_i,"Probes"] && abs(nrow(t) / (CN[CN_i,"End.bp"] - CN[CN_i,"Start.bp"])) > min_het_snp_density){    ####### remove hyper mutation 
 
 #################

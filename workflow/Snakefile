@@ -1,0 +1,140 @@
+wildcard_constraints:
+
+configfile:"workflow/configs/config.yaml"
+
+rule all:
+
+rule InfoGenomeR_env:
+        conda:
+                "envs/InfoGenomeR.yaml"
+        shell:
+                "workflow/scripts/InfoGenomeR_env.sh"
+
+rule InfoGenomeR_example_download:
+        conda:  
+                "envs/InfoGenomeR.yaml"
+        shell:  
+                "workflow/scripts/InfoGenomeR_example_download.sh"
+
+
+rule InfoGenomeR_download:
+        output:
+                default_repeatmasker=Path(workflow.basedir) / "../humandb/GRCh37.repeatmasker",
+                default_cnv_mappability=directory(Path(workflow.basedir) / "../humandb/hg19.CRG.50bp"),
+                default_haplotype=directory(Path(workflow.basedir) / "../humandb/haplotype_1000G")
+        conda:
+                "envs/InfoGenomeR.yaml"
+        shell:
+                "workflow/scripts/InfoGenomeR_download.sh"
+
+rule bwa_mapping:
+        input:
+                ref="{root}/ref/hg19.fa",
+                fastq_dir=ancient("{root}/fastq"),
+        output:
+                bam_dir=directory("{root}/bam")
+        conda:
+                "envs/InfoGenomeR.yaml"
+        params: 
+                mode=config["mode"]
+        shell:
+                "workflow/scripts/bwa_mapping.sh {params.mode} {input.fastq_dir} {input.ref} {output.bam_dir}"
+
+rule bam_processing:
+        input:  
+                ref="{root}/ref/hg19.fa",
+                bam_dir=ancient("{root}/bam"),
+                exclude_tsv=Path(workflow.basedir) / "../humandb/human.hg19.excl.tsv",
+                norm_map=Path(workflow.basedir) / "../humandb/hg19.CRG.50bp"
+        output: 
+                preprocess_dir=directory("{root}/preprocess")
+        conda:  
+                "envs/InfoGenomeR.yaml"
+        params: 
+                mode=config["mode"]
+        shell:  
+                "workflow/scripts/bam_preprocessing.sh {params.mode} {input.bam_dir} {input.ref} {output.preprocess_dir} {input.exclude_tsv} {input.norm_map}"
+
+rule InfoGenomeR_breakpoint_graph:
+        input:  
+                ref="{root}/ref/hg19.fa",
+                root_dir=ancient("{root}"),
+                preprocess_dir=ancient(rules.bam_processing.output.preprocess_dir),
+        output: 
+                breakpoint_graph_dir=directory("{root}/InfoGenomeR_job"),
+        conda:  
+                "envs/InfoGenomeR.yaml"
+        params:
+                mode=config["mode"],
+                lambda_ini=config["lambda_ini"],
+                lambda_fi=config["lambda_fi"],
+                min_ploidy=config["min_ploidy"],
+                max_ploidy=config["max_ploidy"],
+                cancer_type=config["cancer_type"]
+        shell:  
+                "workflow/scripts/InfoGenomeR_breakpoint.sh {params.mode} {input.root_dir} {input.preprocess_dir} {output.breakpoint_graph_dir} {input.ref} {params.lambda_ini} {params.lambda_fi} {params.min_ploidy} {params.max_ploidy} {params.cancer_type}"
+
+rule InfoGenomeR_breakpoint_graph_simplification:
+        input:  
+                ref="{root}/ref/hg19.fa",
+                root_dir=ancient("{root}"),
+                breakpoint_graph_input_dir=ancient(rules.InfoGenomeR_breakpoint_graph.output.breakpoint_graph_dir)
+        output: 
+                breakpoint_graph_simplification_dir=directory("{root}/InfoGenomeR_simplification_job"),
+        conda:  
+                "envs/InfoGenomeR.yaml"
+        params:
+                mode=config["mode"],
+                lambda_ini=config["lambda_ini"],
+                lambda_fi=config["lambda_fi"],
+                min_ploidy=config["min_ploidy"],
+                max_ploidy=config["max_ploidy"],
+                cancer_type=config["cancer_type"]
+        shell:  
+                "workflow/scripts/InfoGenomeR_breakpoint_simplification.sh {params.mode} {input.root_dir} {input.breakpoint_graph_input_dir} {output.breakpoint_graph_simplification_dir} {input.ref} {params.lambda_ini} {params.lambda_fi} {params.min_ploidy} {params.max_ploidy} {params.cancer_type}"
+
+
+rule InfoGenomeR_allele_graph:
+        input:  
+                ref="{root}/ref/hg19.fa",
+                root_dir=ancient("{root}"),
+                haplotype_path=Path(workflow.basedir) / "../humandb/haplotype_1000G",
+                breakpoint_graph_input_dir=ancient(rules.InfoGenomeR_breakpoint_graph_simplification.output.breakpoint_graph_simplification_dir),
+                preprocess_dir=ancient("{root}/preprocess"),
+        output: 
+                allele_graph_dir=directory("{root}/InfoGenomeR_allele_graph_job"),
+        conda:  
+                "envs/InfoGenomeR.yaml"
+        params: 
+                mode=config["mode"]
+        shell:  
+                "workflow/scripts/InfoGenomeR_allele_graph.sh {params.mode} {input.root_dir} {input.breakpoint_graph_input_dir} {output.allele_graph_dir} {input.ref} {input.haplotype_path}"
+
+
+rule InfoGenomeR_haplotype_graph:
+        input:  
+                ref="{root}/ref/hg19.fa",
+                root_dir=ancient("{root}"),
+                haplotype_path=Path(workflow.basedir) / "../humandb/haplotype_1000G",
+                allele_graph_input_dir=ancient(rules.InfoGenomeR_allele_graph.output.allele_graph_dir),
+        output: 
+                haplotype_graph_dir=directory("{root}/InfoGenomeR_haplotype_graph_job"),
+        conda:  
+                "envs/InfoGenomeR.yaml"
+        shell:  
+                "workflow/scripts/InfoGenomeR_haplotype_graph.sh {input.root_dir} {input.allele_graph_input_dir} {output.haplotype_graph_dir} {input.ref} {input.haplotype_path}"
+
+
+rule InfoGenomeR_karyotyping:
+        input:  
+                ref="{root}/ref/hg19.fa",
+                root_dir=ancient("{root}"),
+                haplotype_path=Path(workflow.basedir) / "../humandb/haplotype_1000G",
+                haplotype_graph_input_dir=ancient(rules.InfoGenomeR_haplotype_graph.output.haplotype_graph_dir),
+        output: 
+                karyotype_output_dir=directory("{root}/InfoGenomeR_output"),
+        conda:  
+                "envs/InfoGenomeR.yaml"
+        shell:  
+                "workflow/scripts/InfoGenomeR_karyotyping.sh {input.root_dir} {input.haplotype_graph_input_dir} {output.karyotype_output_dir} {input.ref} {input.haplotype_path}"
+
