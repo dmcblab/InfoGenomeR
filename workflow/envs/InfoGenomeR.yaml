@@ -4,7 +4,7 @@ channels:
         - bioconda
         - defaults
 dependencies:
-        - perl
+        - perl=5.22.0
         - perl-bioperl
         - bwa=0.7.15
         - samtools
