@@ -264,7 +264,7 @@ if [ $mode != "simplification" ];then
 		if [ $black_removal == "T" ];then
 			Rscript $library/bin_blacklist.R $bin cn_norm blacklist
 		else
-			cp $bin\/cn_norm/*.bin ./cn_norm
+			cp $bin\/*.bin ./cn_norm
 		fi
 	fi
 fi
