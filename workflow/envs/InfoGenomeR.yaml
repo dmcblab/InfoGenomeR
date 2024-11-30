@@ -6,7 +6,7 @@ channels:
 dependencies:
         - perl=5.22.0
         - perl-bioperl
-        - bwa=0.7.15
+        - bwa-mem2
         - samtools
         - bedtools=2.29.1
         - r-base =3.6.3

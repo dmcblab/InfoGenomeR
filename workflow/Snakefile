@@ -10,6 +10,12 @@ rule InfoGenomeR_env:
         shell:
                 "workflow/scripts/InfoGenomeR_env.sh"
 
+rule SV_env:
+        conda:  
+                "envs/SV.yaml"
+        shell:  
+                ":"
+
 rule InfoGenomeR_example_download:
         conda:  
                 "envs/InfoGenomeR.yaml"
@@ -26,6 +32,17 @@ rule InfoGenomeR_download:
                 "envs/InfoGenomeR.yaml"
         shell:
                 "workflow/scripts/InfoGenomeR_download.sh"
+
+rule bwa_indexing:
+        output:
+               ref_dir=directory(Path(workflow.basedir) / "../humandb/custom_ref")
+        conda:
+               "envs/InfoGenomeR.yaml"
+        params:
+               custom_fa=config["custom_fa"]
+        shell:
+               "workflow/scripts/bwa_index.sh {params.custom_fa}"
+
 
 rule bwa_mapping:
         input:
